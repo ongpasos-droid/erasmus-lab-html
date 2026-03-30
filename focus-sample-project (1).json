@@ -1,0 +1,186 @@
+{
+  "meta": {
+    "version": "1.0",
+    "tool": "erasmus-budget-wizard",
+    "generated_at": "2026-03-30T00:00:00.000Z",
+    "source_module": "wizard"
+  },
+  "fields": {
+    "proj_name": "FOCUS",
+    "proj_type": "KA220-VET",
+    "proj_desc": "Proyecto europeo de formación profesional con socios de España, Francia e Italia.",
+    "proj_start": "2026-01-01",
+    "months": "24",
+    "eu_grant": "400000",
+    "cofin_pct": "80",
+    "indirect_pct": "7",
+    "n_partners": "3"
+  },
+  "state": {
+    "maxReached": 4,
+    "partners": [
+      {
+        "id": 1,
+        "name": "PERMA",
+        "city": "Santander",
+        "country": "España",
+        "role": "applicant",
+        "order_index": 1
+      },
+      {
+        "id": 2,
+        "name": "3po",
+        "city": "Paris",
+        "country": "Francia",
+        "role": "partner",
+        "order_index": 2
+      },
+      {
+        "id": 3,
+        "name": "oriel",
+        "city": "Roma",
+        "country": "Italia",
+        "role": "partner",
+        "order_index": 3
+      }
+    ],
+    "perdiemRates": {
+      "1": {
+        "aloj": 105,
+        "mant": 40
+      },
+      "2": {
+        "aloj": 115,
+        "mant": 45
+      },
+      "3": {
+        "aloj": 115,
+        "mant": 45
+      }
+    },
+    "workerRates": [
+      {
+        "id": 1,
+        "pid": 1,
+        "category": "Manager",
+        "rate": 164
+      },
+      {
+        "id": 2,
+        "pid": 1,
+        "category": "Trainer/Researcher/Youth worker",
+        "rate": 137
+      },
+      {
+        "id": 3,
+        "pid": 1,
+        "category": "Technician",
+        "rate": 102
+      },
+      {
+        "id": 4,
+        "pid": 1,
+        "category": "Administrative",
+        "rate": 78
+      },
+      {
+        "id": 5,
+        "pid": 2,
+        "category": "Manager",
+        "rate": 280
+      },
+      {
+        "id": 6,
+        "pid": 2,
+        "category": "Trainer/Researcher/Youth worker",
+        "rate": 214
+      },
+      {
+        "id": 7,
+        "pid": 2,
+        "category": "Technician",
+        "rate": 162
+      },
+      {
+        "id": 8,
+        "pid": 2,
+        "category": "Administrative",
+        "rate": 131
+      },
+      {
+        "id": 9,
+        "pid": 3,
+        "category": "Manager",
+        "rate": 280
+      },
+      {
+        "id": 10,
+        "pid": 3,
+        "category": "Trainer/Researcher/Youth worker",
+        "rate": 214
+      },
+      {
+        "id": 11,
+        "pid": 3,
+        "category": "Technician",
+        "rate": 162
+      },
+      {
+        "id": 12,
+        "pid": 3,
+        "category": "Administrative",
+        "rate": 131
+      }
+    ],
+    "wrCounter": 12,
+    "routes": {
+      "1_2": {
+        "km": 1249,
+        "green": true,
+        "custom_rate": 417
+      },
+      "1_3": {
+        "km": 1249,
+        "green": true,
+        "custom_rate": 417
+      },
+      "2_3": {
+        "km": 1249,
+        "green": true,
+        "custom_rate": 417
+      }
+    },
+    "extraDestinations": [],
+    "wps": [
+      {
+        "name": "WP1",
+        "desc": "Project Management and Coordination",
+        "leader": 1,
+        "_nameCustomized": true,
+        "activities": []
+      },
+      {
+        "name": "WP2",
+        "desc": "Training and Capacity Building",
+        "leader": 2,
+        "_nameCustomized": true,
+        "activities": []
+      },
+      {
+        "name": "WP3",
+        "desc": "Impact, Exploitation and Sustainability",
+        "leader": 3,
+        "_nameCustomized": true,
+        "activities": []
+      },
+      {
+        "name": "WP4",
+        "desc": "Impact, Exploitation and Sustainability",
+        "leader": 1,
+        "_nameCustomized": true,
+        "activities": []
+      }
+    ],
+    "actCounter": 0
+  }
+}

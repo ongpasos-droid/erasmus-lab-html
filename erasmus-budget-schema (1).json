@@ -1,0 +1,1012 @@
+{
+  "meta": {
+    "version": "1.0",
+    "tool": "erasmus-budget-wizard",
+    "generated_at": "2026-03-30",
+    "tables_count": 17,
+    "relations_count": 17
+  },
+  "tables": [
+    {
+      "name": "projects",
+      "description": "Core project record. One per Erasmus+ application.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "pk": true,
+          "nullable": false,
+          "fk": null,
+          "description": "Primary key"
+        },
+        {
+          "name": "name",
+          "type": "varchar(100)",
+          "nullable": false,
+          "fk": null,
+          "description": "Project acronym or name"
+        },
+        {
+          "name": "type",
+          "type": "varchar(60)",
+          "nullable": false,
+          "fk": null,
+          "description": "Erasmus+ action type (e.g. KA220-VET)"
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "nullable": true,
+          "fk": null,
+          "description": "Brief project description"
+        },
+        {
+          "name": "start_date",
+          "type": "date",
+          "nullable": false,
+          "fk": null,
+          "description": "Official project start date"
+        },
+        {
+          "name": "duration_months",
+          "type": "integer",
+          "nullable": false,
+          "fk": null,
+          "description": "Total duration in months"
+        },
+        {
+          "name": "eu_grant",
+          "type": "decimal(12,2)",
+          "nullable": false,
+          "fk": null,
+          "description": "Maximum EU grant amount (euros)"
+        },
+        {
+          "name": "cofin_pct",
+          "type": "integer",
+          "nullable": false,
+          "fk": null,
+          "description": "EU cofinancing percentage (e.g. 80)"
+        },
+        {
+          "name": "indirect_pct",
+          "type": "decimal(5,2)",
+          "nullable": false,
+          "fk": null,
+          "description": "Flat-rate indirect costs percentage (e.g. 7)"
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "nullable": false,
+          "fk": null,
+          "description": "draft | active | submitted | approved | rejected"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "fk": null,
+          "description": "Record creation timestamp"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": false,
+          "fk": null,
+          "description": "Last update timestamp"
+        },
+        {
+          "name": "created_by",
+          "type": "uuid",
+          "nullable": true,
+          "fk": "users.id",
+          "description": "User who created the project"
+        }
+      ]
+    },
+    {
+      "name": "partners",
+      "description": "Consortium members. One applicant + one or more partners per project.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "pk": true,
+          "nullable": false,
+          "fk": null,
+          "description": "Primary key"
+        },
+        {
+          "name": "project_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "projects.id",
+          "description": "Parent project"
+        },
+        {
+          "name": "name",
+          "type": "varchar(100)",
+          "nullable": false,
+          "fk": null,
+          "description": "Organisation acronym"
+        },
+        {
+          "name": "legal_name",
+          "type": "varchar(200)",
+          "nullable": true,
+          "fk": null,
+          "description": "Full legal organisation name"
+        },
+        {
+          "name": "city",
+          "type": "varchar(100)",
+          "nullable": true,
+          "fk": null,
+          "description": "City of headquarters"
+        },
+        {
+          "name": "country",
+          "type": "varchar(100)",
+          "nullable": false,
+          "fk": null,
+          "description": "Country name"
+        },
+        {
+          "name": "role",
+          "type": "varchar(20)",
+          "nullable": false,
+          "fk": null,
+          "description": "applicant | partner"
+        },
+        {
+          "name": "order_index",
+          "type": "integer",
+          "nullable": false,
+          "fk": null,
+          "description": "Display order (1 = applicant/coordinator)"
+        }
+      ]
+    },
+    {
+      "name": "partner_rates",
+      "description": "Per diem rates per partner (Erasmus+ country groups).",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "pk": true,
+          "nullable": false,
+          "fk": null,
+          "description": "Primary key"
+        },
+        {
+          "name": "partner_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "partners.id",
+          "description": "Parent partner"
+        },
+        {
+          "name": "accommodation_rate",
+          "type": "decimal(8,2)",
+          "nullable": false,
+          "fk": null,
+          "description": "Accommodation cost per day (euros)"
+        },
+        {
+          "name": "subsistence_rate",
+          "type": "decimal(8,2)",
+          "nullable": false,
+          "fk": null,
+          "description": "Subsistence cost per day (euros)"
+        }
+      ]
+    },
+    {
+      "name": "worker_rates",
+      "description": "Staff day rates per partner and job category.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "pk": true,
+          "nullable": false,
+          "fk": null,
+          "description": "Primary key"
+        },
+        {
+          "name": "partner_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "partners.id",
+          "description": "Parent partner"
+        },
+        {
+          "name": "category",
+          "type": "varchar(60)",
+          "nullable": false,
+          "fk": null,
+          "description": "Manager | Trainer/Researcher/Youth worker | Technician | Administrative"
+        },
+        {
+          "name": "rate",
+          "type": "decimal(8,2)",
+          "nullable": false,
+          "fk": null,
+          "description": "Day rate in euros"
+        }
+      ]
+    },
+    {
+      "name": "routes",
+      "description": "Travel routes between any two endpoints.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "pk": true,
+          "nullable": false,
+          "fk": null,
+          "description": "Primary key"
+        },
+        {
+          "name": "project_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "projects.id",
+          "description": "Parent project"
+        },
+        {
+          "name": "endpoint_a",
+          "type": "varchar(60)",
+          "nullable": false,
+          "fk": null,
+          "description": "partner_id or extra_destination_id"
+        },
+        {
+          "name": "endpoint_b",
+          "type": "varchar(60)",
+          "nullable": false,
+          "fk": null,
+          "description": "partner_id or extra_destination_id"
+        },
+        {
+          "name": "distance_km",
+          "type": "integer",
+          "nullable": true,
+          "fk": null,
+          "description": "Distance in km"
+        },
+        {
+          "name": "eco_travel",
+          "type": "boolean",
+          "nullable": false,
+          "fk": null,
+          "description": "Whether eco-travel mode applies"
+        },
+        {
+          "name": "custom_rate",
+          "type": "decimal(8,2)",
+          "nullable": true,
+          "fk": null,
+          "description": "Actual budgeted rate (euros per participant, round trip)"
+        },
+        {
+          "name": "distance_band",
+          "type": "varchar(20)",
+          "nullable": true,
+          "fk": null,
+          "description": "EC band: 10-99 | 100-499 | 500-1999 | 2000-2999 | 3000-3999 | 4000-7999 | 8000+"
+        }
+      ]
+    },
+    {
+      "name": "extra_destinations",
+      "description": "Non-partner travel destinations.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "pk": true,
+          "nullable": false,
+          "fk": null,
+          "description": "Primary key"
+        },
+        {
+          "name": "project_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "projects.id",
+          "description": "Parent project"
+        },
+        {
+          "name": "name",
+          "type": "varchar(100)",
+          "nullable": false,
+          "fk": null,
+          "description": "Destination name"
+        },
+        {
+          "name": "country",
+          "type": "varchar(100)",
+          "nullable": true,
+          "fk": null,
+          "description": "Destination country"
+        },
+        {
+          "name": "accommodation_rate",
+          "type": "decimal(8,2)",
+          "nullable": false,
+          "fk": null,
+          "description": "Accommodation per day (euros)"
+        },
+        {
+          "name": "subsistence_rate",
+          "type": "decimal(8,2)",
+          "nullable": false,
+          "fk": null,
+          "description": "Subsistence per day (euros)"
+        }
+      ]
+    },
+    {
+      "name": "work_packages",
+      "description": "Work packages within a project. WP1 is always management.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "pk": true,
+          "nullable": false,
+          "fk": null,
+          "description": "Primary key"
+        },
+        {
+          "name": "project_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "projects.id",
+          "description": "Parent project"
+        },
+        {
+          "name": "order_index",
+          "type": "integer",
+          "nullable": false,
+          "fk": null,
+          "description": "WP number (1, 2, 3...)"
+        },
+        {
+          "name": "code",
+          "type": "varchar(10)",
+          "nullable": false,
+          "fk": null,
+          "description": "Display code (WP1, WP2...)"
+        },
+        {
+          "name": "title",
+          "type": "varchar(200)",
+          "nullable": false,
+          "fk": null,
+          "description": "Full WP title"
+        },
+        {
+          "name": "category",
+          "type": "varchar(60)",
+          "nullable": true,
+          "fk": null,
+          "description": "Taxonomy category"
+        },
+        {
+          "name": "leader_id",
+          "type": "uuid",
+          "nullable": true,
+          "fk": "partners.id",
+          "description": "Partner leading this WP"
+        }
+      ]
+    },
+    {
+      "name": "activities",
+      "description": "Activities within a WP.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "pk": true,
+          "nullable": false,
+          "fk": null,
+          "description": "Primary key"
+        },
+        {
+          "name": "wp_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "work_packages.id",
+          "description": "Parent work package"
+        },
+        {
+          "name": "type",
+          "type": "varchar(20)",
+          "nullable": false,
+          "fk": null,
+          "description": "mgmt | meeting | ltta | io | me | local_ws | campaign | website | artistic | extraordinary | equipment | consumables | other"
+        },
+        {
+          "name": "label",
+          "type": "varchar(200)",
+          "nullable": false,
+          "fk": null,
+          "description": "Activity name / description"
+        },
+        {
+          "name": "order_index",
+          "type": "integer",
+          "nullable": false,
+          "fk": null,
+          "description": "Display order within WP"
+        }
+      ]
+    },
+    {
+      "name": "activity_mobility",
+      "description": "Config for mobility activities (meeting, ltta).",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "pk": true,
+          "nullable": false,
+          "fk": null,
+          "description": "Primary key"
+        },
+        {
+          "name": "activity_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "activities.id",
+          "description": "Parent activity"
+        },
+        {
+          "name": "host_partner_id",
+          "type": "varchar(60)",
+          "nullable": false,
+          "fk": null,
+          "description": "Host partner_id or extra_destination_id"
+        },
+        {
+          "name": "host_active",
+          "type": "boolean",
+          "nullable": false,
+          "fk": null,
+          "description": "Whether host local costs are included"
+        },
+        {
+          "name": "pax_per_partner",
+          "type": "integer",
+          "nullable": false,
+          "fk": null,
+          "description": "Number of travellers per sending partner"
+        },
+        {
+          "name": "duration_days",
+          "type": "integer",
+          "nullable": false,
+          "fk": null,
+          "description": "Activity duration in days"
+        },
+        {
+          "name": "local_pax",
+          "type": "integer",
+          "nullable": false,
+          "fk": null,
+          "description": "Number of local participants at host"
+        },
+        {
+          "name": "local_transport",
+          "type": "decimal(8,2)",
+          "nullable": false,
+          "fk": null,
+          "description": "Local transport cost per local participant (euros)"
+        },
+        {
+          "name": "mat_cost_per_pax",
+          "type": "decimal(8,2)",
+          "nullable": false,
+          "fk": null,
+          "description": "Materials cost per participant (euros)"
+        }
+      ]
+    },
+    {
+      "name": "activity_mobility_participants",
+      "description": "Which partners participate in a mobility activity.",
+      "fields": [
+        {
+          "name": "activity_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "activities.id",
+          "description": "Mobility activity"
+        },
+        {
+          "name": "partner_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "partners.id",
+          "description": "Participating partner"
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "nullable": false,
+          "fk": null,
+          "description": "Whether this partner is included in cost calculation"
+        }
+      ]
+    },
+    {
+      "name": "activity_management",
+      "description": "Config for management and coordination activities.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "pk": true,
+          "nullable": false,
+          "fk": null,
+          "description": "Primary key"
+        },
+        {
+          "name": "activity_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "activities.id",
+          "description": "Parent activity"
+        },
+        {
+          "name": "rate_applicant",
+          "type": "decimal(8,2)",
+          "nullable": false,
+          "fk": null,
+          "description": "Monthly cost for applicant/coordinator (euros/month)"
+        },
+        {
+          "name": "rate_partner",
+          "type": "decimal(8,2)",
+          "nullable": false,
+          "fk": null,
+          "description": "Monthly cost per partner (euros/month)"
+        }
+      ]
+    },
+    {
+      "name": "activity_management_partners",
+      "description": "Active/inactive flag per partner for management activities.",
+      "fields": [
+        {
+          "name": "activity_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "activities.id",
+          "description": "Management activity"
+        },
+        {
+          "name": "partner_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "partners.id",
+          "description": "Partner"
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "nullable": false,
+          "fk": null,
+          "description": "Whether this partner is included"
+        }
+      ]
+    },
+    {
+      "name": "activity_intellectual_outputs",
+      "description": "Config for Intellectual Output activities.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "pk": true,
+          "nullable": false,
+          "fk": null,
+          "description": "Primary key"
+        },
+        {
+          "name": "activity_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "activities.id",
+          "description": "Parent activity"
+        },
+        {
+          "name": "partner_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "partners.id",
+          "description": "Partner contributing to this IO"
+        },
+        {
+          "name": "days",
+          "type": "integer",
+          "nullable": false,
+          "fk": null,
+          "description": "Staff days allocated for this partner"
+        },
+        {
+          "name": "worker_category",
+          "type": "varchar(60)",
+          "nullable": true,
+          "fk": null,
+          "description": "Worker category"
+        }
+      ]
+    },
+    {
+      "name": "activity_multiplier_events",
+      "description": "Config for Multiplier Event activities (per partner).",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "pk": true,
+          "nullable": false,
+          "fk": null,
+          "description": "Primary key"
+        },
+        {
+          "name": "activity_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "activities.id",
+          "description": "Parent activity"
+        },
+        {
+          "name": "partner_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "partners.id",
+          "description": "Partner organising the event"
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "nullable": false,
+          "fk": null,
+          "description": "Whether this partner event is included"
+        },
+        {
+          "name": "local_pax",
+          "type": "integer",
+          "nullable": false,
+          "fk": null,
+          "description": "Local participants"
+        },
+        {
+          "name": "intl_pax",
+          "type": "integer",
+          "nullable": false,
+          "fk": null,
+          "description": "International participants"
+        },
+        {
+          "name": "local_rate",
+          "type": "decimal(8,2)",
+          "nullable": false,
+          "fk": null,
+          "description": "Cost per local participant (euros)"
+        },
+        {
+          "name": "intl_rate",
+          "type": "decimal(8,2)",
+          "nullable": false,
+          "fk": null,
+          "description": "Cost per international participant (euros)"
+        }
+      ]
+    },
+    {
+      "name": "activity_local_workshops",
+      "description": "Config for Local Workshop activities (per partner).",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "pk": true,
+          "nullable": false,
+          "fk": null,
+          "description": "Primary key"
+        },
+        {
+          "name": "activity_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "activities.id",
+          "description": "Parent activity"
+        },
+        {
+          "name": "partner_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "partners.id",
+          "description": "Partner organising the workshop"
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "nullable": false,
+          "fk": null,
+          "description": "Whether this partner workshop is included"
+        },
+        {
+          "name": "participants",
+          "type": "integer",
+          "nullable": false,
+          "fk": null,
+          "description": "Number of participants per session"
+        },
+        {
+          "name": "sessions",
+          "type": "integer",
+          "nullable": false,
+          "fk": null,
+          "description": "Number of sessions"
+        },
+        {
+          "name": "cost_per_pax",
+          "type": "decimal(8,2)",
+          "nullable": false,
+          "fk": null,
+          "description": "Cost per participant (euros)"
+        }
+      ]
+    },
+    {
+      "name": "activity_campaigns",
+      "description": "Config for dissemination campaign activities (per partner).",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "pk": true,
+          "nullable": false,
+          "fk": null,
+          "description": "Primary key"
+        },
+        {
+          "name": "activity_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "activities.id",
+          "description": "Parent activity"
+        },
+        {
+          "name": "partner_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "partners.id",
+          "description": "Partner running the campaign"
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "nullable": false,
+          "fk": null,
+          "description": "Whether this partner campaign is included"
+        },
+        {
+          "name": "monthly_amount",
+          "type": "decimal(8,2)",
+          "nullable": false,
+          "fk": null,
+          "description": "Monthly investment (euros)"
+        },
+        {
+          "name": "months",
+          "type": "integer",
+          "nullable": false,
+          "fk": null,
+          "description": "Campaign duration in months"
+        },
+        {
+          "name": "cpm",
+          "type": "decimal(8,2)",
+          "nullable": false,
+          "fk": null,
+          "description": "Estimated CPM in euros (cost per 1000 impressions)"
+        }
+      ]
+    },
+    {
+      "name": "activity_generic_costs",
+      "description": "Config for generic cost activities: website, artistic_fees, extraordinary, equipment, consumables, other.",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "pk": true,
+          "nullable": false,
+          "fk": null,
+          "description": "Primary key"
+        },
+        {
+          "name": "activity_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "activities.id",
+          "description": "Parent activity"
+        },
+        {
+          "name": "partner_id",
+          "type": "uuid",
+          "nullable": false,
+          "fk": "partners.id",
+          "description": "Partner incurring the cost"
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "nullable": false,
+          "fk": null,
+          "description": "Whether this partner cost is included"
+        },
+        {
+          "name": "note",
+          "type": "text",
+          "nullable": true,
+          "fk": null,
+          "description": "Description of the cost"
+        },
+        {
+          "name": "amount",
+          "type": "decimal(12,2)",
+          "nullable": false,
+          "fk": null,
+          "description": "Total cost amount (euros)"
+        },
+        {
+          "name": "project_pct",
+          "type": "decimal(5,2)",
+          "nullable": true,
+          "fk": null,
+          "description": "Percentage of cost attributable to project"
+        },
+        {
+          "name": "lifetime_pct",
+          "type": "decimal(5,2)",
+          "nullable": true,
+          "fk": null,
+          "description": "Percentage of asset lifetime covered by project"
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "from": "projects",
+      "to": "partners",
+      "type": "1:N",
+      "via": "partners.project_id",
+      "note": "A project has multiple consortium partners"
+    },
+    {
+      "from": "projects",
+      "to": "work_packages",
+      "type": "1:N",
+      "via": "work_packages.project_id",
+      "note": "A project is divided into work packages"
+    },
+    {
+      "from": "projects",
+      "to": "routes",
+      "type": "1:N",
+      "via": "routes.project_id",
+      "note": "Travel routes are defined at project level"
+    },
+    {
+      "from": "projects",
+      "to": "extra_destinations",
+      "type": "1:N",
+      "via": "extra_destinations.project_id",
+      "note": "Extra travel destinations per project"
+    },
+    {
+      "from": "partners",
+      "to": "partner_rates",
+      "type": "1:1",
+      "via": "partner_rates.partner_id",
+      "note": "Each partner has one set of per diem rates"
+    },
+    {
+      "from": "partners",
+      "to": "worker_rates",
+      "type": "1:N",
+      "via": "worker_rates.partner_id",
+      "note": "Each partner has multiple worker category rates"
+    },
+    {
+      "from": "work_packages",
+      "to": "activities",
+      "type": "1:N",
+      "via": "activities.wp_id",
+      "note": "A WP contains multiple activities"
+    },
+    {
+      "from": "partners",
+      "to": "work_packages",
+      "type": "N:1",
+      "via": "work_packages.leader_id",
+      "note": "A partner leads one or more WPs"
+    },
+    {
+      "from": "activities",
+      "to": "activity_mobility",
+      "type": "1:1",
+      "via": "activity_mobility.activity_id",
+      "note": "Mobility-type activities (meeting, ltta)"
+    },
+    {
+      "from": "activities",
+      "to": "activity_management",
+      "type": "1:1",
+      "via": "activity_management.activity_id",
+      "note": "Management activities"
+    },
+    {
+      "from": "activities",
+      "to": "activity_intellectual_outputs",
+      "type": "1:N",
+      "via": "activity_intellectual_outputs.activity_id",
+      "note": "IO days per partner"
+    },
+    {
+      "from": "activities",
+      "to": "activity_multiplier_events",
+      "type": "1:N",
+      "via": "activity_multiplier_events.activity_id",
+      "note": "ME config per partner"
+    },
+    {
+      "from": "activities",
+      "to": "activity_local_workshops",
+      "type": "1:N",
+      "via": "activity_local_workshops.activity_id",
+      "note": "Workshop config per partner"
+    },
+    {
+      "from": "activities",
+      "to": "activity_campaigns",
+      "type": "1:N",
+      "via": "activity_campaigns.activity_id",
+      "note": "Campaign config per partner"
+    },
+    {
+      "from": "activities",
+      "to": "activity_generic_costs",
+      "type": "1:N",
+      "via": "activity_generic_costs.activity_id",
+      "note": "Generic costs per partner"
+    },
+    {
+      "from": "activity_mobility",
+      "to": "activity_mobility_participants",
+      "type": "1:N",
+      "via": "activity_mobility_participants.activity_id",
+      "note": "Which partners travel"
+    },
+    {
+      "from": "activity_management",
+      "to": "activity_management_partners",
+      "type": "1:N",
+      "via": "activity_management_partners.activity_id",
+      "note": "Partner active flags for mgmt"
+    }
+  ]
+}

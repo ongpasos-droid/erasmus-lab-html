@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Erasmus+ Project Intake · M0</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F0EDE6; --surface:#FFF; --surface2:#F5F3EE; --surface3:#ECEAE3;
+  --border:rgba(0,0,0,.07); --border2:rgba(0,0,0,.13);
+  --text:#161410; --text2:#5C5A55; --text3:#A8A49C;
+  --accent:#1B3D2F; --accent2:#2D6A4F; --accent3:#3D8B65;
+  --accent-bg:#EAF3ED; --accent-bd:#B2D4BC;
+  --r:14px; --r-sm:8px;
+  --sh:0 2px 8px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --sh-md:0 6px 20px rgba(0,0,0,.09);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;min-height:100vh;}
+
+/* ── APP BAR ── */
+.app-bar{background:linear-gradient(135deg,#1B3D2F,#2D6A4F);height:60px;padding:0 32px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 16px rgba(27,61,47,.35);position:sticky;top:0;z-index:100;}
+.bar-brand{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff;letter-spacing:-.02em;display:flex;align-items:center;gap:10px;}
+.bar-tag{font-size:10px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.7);padding:2px 9px;border-radius:20px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;}
+.bar-actions{display:flex;gap:8px;align-items:center;}
+.bar-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#fff;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.bar-btn:hover{background:rgba(255,255,255,.22);}
+
+/* ── STEPS NAV ── */
+.steps-nav{background:var(--surface);border-bottom:1px solid var(--border2);display:flex;padding:0 32px;position:sticky;top:60px;z-index:90;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.step-tab{flex:1;padding:14px 0 11px;text-align:center;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;user-select:none;}
+.step-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.step-tab.active .snum{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 4px rgba(27,61,47,.1);}
+.step-tab.done{color:var(--accent2);}
+.step-tab.done .snum{background:var(--accent2);border-color:var(--accent2);color:#fff;}
+.step-tab.locked{color:var(--text3);cursor:default;}
+.snum{width:22px;height:22px;border-radius:50%;border:2px solid currentColor;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-bottom:3px;transition:all .2s;}
+.slabel{font-size:10px;font-weight:600;letter-spacing:.03em;display:block;}
+
+/* ── LAYOUT ── */
+.container{max-width:820px;margin:0 auto;padding:40px 24px 100px;}
+.page{display:none;}
+.page.visible{display:block;animation:fadeUp .25s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.page-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--text);letter-spacing:-.03em;margin-bottom:6px;}
+.page-sub{font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:28px;}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px 26px;margin-bottom:18px;box-shadow:var(--sh);}
+.card-title{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.card-title::before{content:'';width:3px;height:12px;border-radius:2px;background:var(--accent);flex-shrink:0;}
+
+/* ── FORM ── */
+label{font-size:11px;color:var(--text2);font-weight:600;letter-spacing:.03em;text-transform:uppercase;display:block;margin-bottom:5px;}
+input[type=text],input[type=number],input[type=date],select,textarea{
+  width:100%;padding:10px 13px;font-size:13px;font-family:'DM Sans',sans-serif;
+  border:1.5px solid var(--border2);border-radius:var(--r-sm);
+  background:var(--surface);color:var(--text);transition:border-color .15s,box-shadow .15s;
+}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(27,61,47,.1);}
+input[readonly],select[disabled]{background:var(--surface2);color:var(--text2);cursor:default;}
+textarea{resize:vertical;line-height:1.65;}
+.hint{font-size:11px;color:var(--text3);margin-top:5px;line-height:1.5;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.field{display:flex;flex-direction:column;gap:0;}
+
+/* ── BUTTONS ── */
+.btn{padding:10px 22px;font-size:13px;font-family:'DM Sans',sans-serif;font-weight:600;border-radius:var(--r-sm);cursor:pointer;border:1.5px solid var(--border2);background:var(--surface);color:var(--text);transition:all .15s;}
+.btn:hover{background:var(--surface2);box-shadow:var(--sh);}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:var(--accent);box-shadow:0 2px 8px rgba(27,61,47,.25);}
+.btn-primary:hover{opacity:.92;box-shadow:0 4px 14px rgba(27,61,47,.3);}
+.btn-add{background:var(--accent-bg);color:var(--accent);border:1.5px dashed var(--accent-bd);font-size:12px;padding:7px 16px;}
+.btn-add:hover{background:#D8EDE0;border-style:solid;}
+.btn-row{display:flex;gap:10px;justify-content:flex-end;margin-top:28px;}
+
+/* ── PROGRAM OPTION ── */
+.program-card{border:2px solid var(--border);border-radius:var(--r);padding:20px 22px;cursor:pointer;transition:all .2s;position:relative;background:var(--surface);}
+.program-card:hover{border-color:var(--accent-bd);background:var(--accent-bg);}
+.program-card.selected{border-color:var(--accent);background:var(--accent-bg);box-shadow:0 0 0 4px rgba(27,61,47,.08);}
+.program-card.selected::after{content:'✓';position:absolute;top:16px;right:18px;width:24px;height:24px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;}
+.prog-badge{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:2px 9px;border-radius:20px;margin-bottom:8px;}
+.prog-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.prog-desc{font-size:12px;color:var(--text2);line-height:1.5;}
+
+/* ── CONVOCATORIA DATA GRID ── */
+.conv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;}
+.conv-item{background:var(--surface2);border-radius:var(--r-sm);padding:12px 14px;}
+.conv-label{font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;}
+.conv-value{font-family:'DM Mono',monospace;font-size:14px;font-weight:600;color:var(--text);}
+.conv-note{font-size:10px;color:var(--text3);margin-top:3px;}
+.conv-highlight{background:var(--accent-bg);border-left:3px solid var(--accent);}
+.conv-highlight .conv-label{color:var(--accent);}
+.conv-highlight .conv-value{color:var(--accent);}
+
+/* ── PARTNER CARD ── */
+.partner-card{border:1.5px solid var(--border);border-radius:var(--r-sm);padding:16px;margin-bottom:12px;background:var(--surface2);}
+.partner-card.is-applicant{border-left:4px solid var(--accent);background:linear-gradient(to right,var(--accent-bg),var(--surface2));}
+.partner-badge{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;}
+
+/* ── AI FIELDS ── */
+.ai-field{border:1.5px solid var(--border2);border-radius:var(--r);overflow:hidden;margin-bottom:16px;}
+.ai-field-head{background:var(--surface2);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.ai-field-title{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;}
+.ai-badge{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:2px 8px;border-radius:20px;background:#EDE9FE;color:#5B21B6;}
+.ai-field-body{padding:16px;}
+.ai-field-desc{font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6;}
+.word-counter{font-size:11px;text-align:right;margin-top:6px;font-family:'DM Mono',monospace;transition:color .2s;}
+.wc-low{color:#DC2626;}
+.wc-ok{color:var(--accent2);}
+.wc-high{color:#B45309;}
+.wc-neutral{color:var(--text3);}
+.word-range{font-size:10px;color:var(--text3);margin-top:2px;text-align:right;}
+
+/* ── SUMMARY / EXPORT ── */
+.export-hero{background:linear-gradient(135deg,#1B3D2F,#1D4D3A,#2D6A4F);border-radius:var(--r);padding:36px;text-align:center;color:#fff;position:relative;overflow:hidden;margin-bottom:18px;}
+.export-hero::before{content:'{ }';position:absolute;right:-15px;top:-20px;font-family:'DM Mono',monospace;font-size:130px;font-weight:700;opacity:.05;}
+.export-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:8px;}
+.export-sub{font-size:13px;opacity:.65;margin-bottom:24px;line-height:1.6;}
+.export-btn{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--accent);border:none;padding:12px 24px;border-radius:var(--r-sm);font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin:0 5px 10px;transition:all .15s;}
+.export-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.25);}
+.export-btn.ghost{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);}
+.export-btn.ghost:hover{background:rgba(255,255,255,.25);}
+.summary-row{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.summary-row:last-child{border-bottom:none;}
+.sl{color:var(--text2);}
+.sv{font-weight:600;color:var(--text);text-align:right;max-width:65%;}
+.chip{display:inline-block;background:var(--accent-bg);color:var(--accent);padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;margin:2px;}
+
+/* ── INFO BOX ── */
+.info-box{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:var(--r-sm);padding:12px 14px;font-size:12px;color:#1D4ED8;line-height:1.6;margin-top:12px;}
+
+@media(max-width:680px){
+  .g2,.g3,.conv-grid{grid-template-columns:1fr;}
+  .steps-nav{padding:0 12px;}
+  .container{padding:24px 14px 80px;}
+  .app-bar{padding:0 16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- APP BAR -->
+<div class="app-bar">
+  <div class="bar-brand">
+    <span style="opacity:.4">◈</span>
+    Project Intake
+    <span class="bar-tag">M0 · Erasmus Lab</span>
+  </div>
+  <div class="bar-actions">
+    <span id="autosave-hint" style="font-size:11px;color:rgba(255,255,255,.4);"></span>
+    <button class="bar-btn" onclick="saveIntake()">💾 Guardar</button>
+    <button class="bar-btn" onclick="document.getElementById('load-file').click()">📂 Cargar</button>
+    <input type="file" id="load-file" accept=".json" style="display:none" onchange="loadIntake(this)">
+  </div>
+</div>
+
+<!-- STEPS NAV -->
+<div class="steps-nav">
+  <div class="step-tab active" id="stab-0" onclick="tryGoTo(0)">
+    <div class="snum">1</div><span class="slabel">Programa</span>
+  </div>
+  <div class="step-tab locked" id="stab-1" onclick="tryGoTo(1)">
+    <div class="snum">2</div><span class="slabel">Proyecto</span>
+  </div>
+  <div class="step-tab locked" id="stab-2" onclick="tryGoTo(2)">
+    <div class="snum">3</div><span class="slabel">Contexto</span>
+  </div>
+  <div class="step-tab locked" id="stab-3" onclick="tryGoTo(3)">
+    <div class="snum">4</div><span class="slabel">Exportar</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ══════════════════════════
+     STEP 1 — PROGRAMA
+══════════════════════════ -->
+<div class="page visible" id="page-0">
+  <div class="page-title">Selecciona el programa</div>
+  <div class="page-sub">El programa determina las reglas de financiación, fechas elegibles y límites de presupuesto que se cargarán automáticamente.</div>
+
+  <div class="card">
+    <div class="card-title">Convocatoria disponible</div>
+
+    <div class="program-card selected" id="prog-ka3" onclick="selectProgram('ka3_youth_together')">
+      <span class="prog-badge" style="background:#EDE9FE;color:#5B21B6;">KA3 · Policy Support</span>
+      <div class="prog-name">Youth Together / European Youth Together</div>
+      <div class="prog-desc">
+        Erasmus+ Youth 2026 — Apoyo a la política de juventud europea. 
+        Proyectos transnacionales que fomenten la participación juvenil, 
+        el diálogo intercultural y los valores europeos.
+      </div>
+    </div>
+
+    <div class="info-box" style="margin-top:14px;">
+      ℹ️ En esta versión solo está disponible la convocatoria KA3 Youth Together 2026. 
+      Próximamente se añadirán KA220-VET, KA220-SCH y otras acciones.
+    </div>
+  </div>
+
+  <div class="card" id="conv-panel">
+    <div class="card-title">Datos de la convocatoria — cargados automáticamente</div>
+    <div class="conv-grid" id="conv-grid"></div>
+
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+      <div class="g3">
+        <div class="field">
+          <label>Fecha de inicio del proyecto</label>
+          <input type="date" id="proj_start" min="2026-09-01" max="2027-03-01"
+            oninput="state.project.start_date=this.value">
+          <div class="hint">Entre 01/09/2026 y 01/03/2027</div>
+        </div>
+        <div class="field">
+          <label>Duración del proyecto (meses)</label>
+          <select id="proj_months" oninput="state.project.duration_months=parseInt(this.value)">
+            <option value="12">12 meses</option>
+            <option value="18">18 meses</option>
+            <option value="24" selected>24 meses</option>
+          </select>
+          <div class="hint">Entre 12 y 24 meses</div>
+        </div>
+        <div class="field">
+          <label>Deadline de presentación</label>
+          <input type="text" value="15 de marzo de 2026" readonly>
+          <div class="hint">Convocatoria cerrada — orientativo</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="next(0)">Siguiente → Proyecto</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     STEP 2 — PROYECTO
+══════════════════════════ -->
+<div class="page" id="page-1">
+  <div class="page-title">Datos del proyecto</div>
+  <div class="page-sub">Nombre, descripción breve y organizaciones del consorcio.</div>
+
+  <div class="card">
+    <div class="card-title">Identificación</div>
+    <div class="g2" style="margin-bottom:14px;">
+      <div class="field">
+        <label>Nombre / Acrónimo del proyecto</label>
+        <input type="text" id="proj_name" placeholder="Ej. YOUTH-ACT, BRIDGE, VOICES..."
+          oninput="state.project.name=this.value">
+        <div class="hint">Acrónimo corto y memorable</div>
+      </div>
+      <div class="field">
+        <label>Programa</label>
+        <input type="text" id="prog_display" readonly>
+      </div>
+    </div>
+    <div class="field">
+      <label>Descripción breve del proyecto</label>
+      <textarea id="proj_desc" rows="3"
+        placeholder="En 2-3 frases: qué propone el proyecto, a quién va dirigido y qué lo hace innovador..."
+        oninput="state.project.description=this.value"></textarea>
+      <div class="hint">Esta descripción aparecerá en el resumen y se transferirá al wizard de presupuesto</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Consorcio</div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <label style="margin:0;white-space:nowrap;">Número de socios</label>
+      <input type="number" id="n_partners" value="3" min="2" max="15" style="width:80px;"
+        oninput="syncPartners()">
+      <span style="font-size:12px;color:var(--text3);">mínimo 2 · El primero es siempre el coordinador</span>
+    </div>
+    <div id="partners-container"></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn" onclick="goTo(0)">← Atrás</button>
+    <button class="btn btn-primary" onclick="next(1)">Siguiente → Contexto</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     STEP 3 — CONTEXTO (AI FIELDS)
+══════════════════════════ -->
+<div class="page" id="page-2">
+  <div class="page-title">Contexto del proyecto</div>
+  <div class="page-sub">
+    Estos tres campos serán procesados por IA en fases posteriores para construir 
+    las secciones de <strong>Relevance</strong>, <strong>Quality</strong>, <strong>Partnership</strong> e <strong>Impact</strong> 
+    de la solicitud. Cuanto más detallados sean, mejores resultados generará el sistema.
+  </div>
+
+  <!-- FIELD 1: PROBLEM -->
+  <div class="ai-field">
+    <div class="ai-field-head">
+      <div class="ai-field-title">
+        <span style="font-size:16px;">🎯</span>
+        Problema o necesidad identificada
+        <span class="ai-badge">→ Relevance</span>
+      </div>
+    </div>
+    <div class="ai-field-body">
+      <div class="ai-field-desc">
+        ¿Qué problema concreto justifica este proyecto? ¿Qué evidencias o datos lo sustentan? 
+        ¿Qué ocurre si no se hace nada?
+      </div>
+      <textarea id="ai_problem" rows="7"
+        placeholder="Describe el problema real que habéis identificado. Incluye datos, estadísticas, contexto geográfico o sectorial si los tienes. Cuanto más específico, mejor trabajará la IA con este texto."
+        oninput="updateWordCount(this,'wc-problem',200,500)"></textarea>
+      <div class="word-counter wc-neutral" id="wc-problem">0 palabras</div>
+      <div class="word-range">Orientativo: 200–500 palabras</div>
+    </div>
+  </div>
+
+  <!-- FIELD 2: TARGET GROUPS -->
+  <div class="ai-field">
+    <div class="ai-field-head">
+      <div class="ai-field-title">
+        <span style="font-size:16px;">👥</span>
+        Grupos destinatarios y beneficiarios
+        <span class="ai-badge">→ Relevance + Impact</span>
+      </div>
+    </div>
+    <div class="ai-field-body">
+      <div class="ai-field-desc">
+        ¿A quién va dirigido directamente el proyecto? ¿Quiénes son los beneficiarios indirectos? 
+        ¿Qué características tienen estos grupos? ¿Por qué necesitan este proyecto?
+      </div>
+      <textarea id="ai_targets" rows="6"
+        placeholder="Describe los grupos diana con precisión: edad, perfil, situación, necesidades específicas. Distingue entre participantes directos (quienes participan en actividades) y beneficiarios indirectos (quienes se benefician de los resultados)."
+        oninput="updateWordCount(this,'wc-targets',150,400)"></textarea>
+      <div class="word-counter wc-neutral" id="wc-targets">0 palabras</div>
+      <div class="word-range">Orientativo: 150–400 palabras</div>
+    </div>
+  </div>
+
+  <!-- FIELD 3: APPROACH -->
+  <div class="ai-field">
+    <div class="ai-field-head">
+      <div class="ai-field-title">
+        <span style="font-size:16px;">💡</span>
+        Enfoque y propuesta de valor transnacional
+        <span class="ai-badge">→ Quality + Partnership</span>
+      </div>
+    </div>
+    <div class="ai-field-body">
+      <div class="ai-field-desc">
+        ¿Cómo propone el proyecto resolver el problema? ¿Qué metodología o innovación aporta? 
+        ¿Qué valor añade la dimensión transnacional? ¿Por qué necesita socios europeos?
+      </div>
+      <textarea id="ai_approach" rows="7"
+        placeholder="Explica el enfoque metodológico del proyecto y por qué el trabajo transnacional es esencial. ¿Qué aporta cada país socio? ¿Qué no podría hacerse solo a nivel nacional? ¿Qué hace diferente a este proyecto de otros similares?"
+        oninput="updateWordCount(this,'wc-approach',200,500)"></textarea>
+      <div class="word-counter wc-neutral" id="wc-approach">0 palabras</div>
+      <div class="word-range">Orientativo: 200–500 palabras</div>
+    </div>
+  </div>
+
+  <div class="info-box" style="background:#F0FDF4;border-color:#BBF7D0;color:#15803D;">
+    ✅ Estos textos no se muestran en ningún informe todavía — se almacenan en el JSON y se usarán en el módulo Developer para construir los apartados narrativos de la solicitud.
+  </div>
+
+  <div class="btn-row">
+    <button class="btn" onclick="goTo(1)">← Atrás</button>
+    <button class="btn btn-primary" onclick="next(2)">Siguiente → Exportar</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     STEP 4 — EXPORTAR
+══════════════════════════ -->
+<div class="page" id="page-3">
+  <div class="page-title">Resumen y exportación</div>
+  <div class="page-sub">Revisa los datos capturados y exporta para continuar en el siguiente módulo.</div>
+
+  <div id="summary-container"></div>
+
+  <div class="export-hero">
+    <div class="export-title">¿Listo para el siguiente módulo?</div>
+    <div class="export-sub">
+      Exporta el JSON y cárgalo en el Wizard de Presupuesto (M1).<br>
+      El nombre del proyecto, tipo de acción, fechas, presupuesto y todos los socios<br>
+      se rellenarán automáticamente.
+    </div>
+    <div>
+      <button class="export-btn" onclick="exportForWizard()">⚡ Exportar para el Wizard (M1)</button>
+      <button class="export-btn ghost" onclick="saveIntake()">💾 Guardar intake completo</button>
+    </div>
+    <div style="margin-top:14px;font-size:11px;opacity:.45;">
+      El JSON incluye también los textos de contexto para módulos futuros (Developer, Evaluator)
+    </div>
+  </div>
+
+  <div class="btn-row" style="margin-top:8px;">
+    <button class="btn" onclick="goTo(2)">← Atrás</button>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+// ══ PROGRAMS DATABASE ══
+const PROGRAMS = {
+  ka3_youth_together: {
+    code:         'KA3-YOUTH-2026',
+    name:         'KA3 · Youth Together / European Youth Together',
+    short:        'KA3 Youth Together',
+    eu_grant:     500000,
+    cofin_pct:    80,
+    indirect_pct: 7,
+    deadline:     '2026-03-15',
+    start_min:    '2026-09-01',
+    start_max:    '2027-03-01',
+    duration_min: 12,
+    duration_max: 24,
+    notes:        'La subvención cubre hasta el 80% del presupuesto elegible. Máximo €500.000.',
+  }
+};
+
+// ══ STATE ══
+let state = {
+  program_id:  'ka3_youth_together',
+  project: {
+    name: '', type: 'KA3-YOUTH-2026', description: '',
+    start_date: '2026-09-01', duration_months: 24,
+    deadline: '2026-03-15', eu_grant: 500000,
+    cofin_pct: 80, indirect_pct: 7,
+  },
+  partners: [
+    { id:1, name:'', city:'', country:'', role:'applicant', order_index:1 },
+    { id:2, name:'', city:'', country:'', role:'partner',   order_index:2 },
+    { id:3, name:'', city:'', country:'', role:'partner',   order_index:3 },
+  ],
+  context: { problem:'', target_groups:'', approach:'' },
+};
+let maxStep = 0;
+
+const PAX_COLORS = ['#1B3D2F','#1D4ED8','#7C3AED','#B45309','#BE185D','#0F766E','#9A3412'];
+
+// ══ NAVIGATION ══
+function goTo(i) {
+  document.querySelectorAll('.page').forEach((p,j) => p.classList.toggle('visible', j===i));
+  document.querySelectorAll('.step-tab').forEach((t,j) => {
+    t.classList.remove('active','done','locked');
+    if (j===i) t.classList.add('active');
+    else if (j<i || j<=maxStep) t.classList.add(j<i?'done':'');
+    else t.classList.add('locked');
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function tryGoTo(i) {
+  if (i > maxStep) return;
+  goTo(i);
+}
+
+function next(from) {
+  collect(from);
+  if (from+1 > maxStep) maxStep = from+1;
+  if (from === 2) buildSummary();
+  goTo(from+1);
+}
+
+// ══ COLLECT ══
+function collect(step) {
+  if (step === 0) {
+    state.project.start_date     = document.getElementById('proj_start').value || '2026-09-01';
+    state.project.duration_months = parseInt(document.getElementById('proj_months').value) || 24;
+  }
+  if (step === 1) {
+    state.project.name        = document.getElementById('proj_name').value;
+    state.project.description = document.getElementById('proj_desc').value;
+    // partners collected via oninput
+  }
+  if (step === 2) {
+    state.context.problem      = document.getElementById('ai_problem').value;
+    state.context.target_groups = document.getElementById('ai_targets').value;
+    state.context.approach     = document.getElementById('ai_approach').value;
+  }
+}
+
+// ══ PROGRAM ══
+function selectProgram(id) {
+  state.program_id = id;
+  document.querySelectorAll('.program-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('prog-'+id.split('_')[0])?.classList.add('selected');
+  renderConvData();
+}
+
+function renderConvData() {
+  const prog = PROGRAMS[state.program_id];
+  if (!prog) return;
+  state.project.eu_grant       = prog.eu_grant;
+  state.project.cofin_pct      = prog.cofin_pct;
+  state.project.indirect_pct   = prog.indirect_pct;
+  state.project.type           = prog.code;
+  state.project.deadline       = prog.deadline;
+
+  const own = Math.round(prog.eu_grant / prog.cofin_pct * (100 - prog.cofin_pct));
+  document.getElementById('conv-grid').innerHTML = `
+    <div class="conv-item conv-highlight">
+      <div class="conv-label">Subvención máxima UE</div>
+      <div class="conv-value">€${prog.eu_grant.toLocaleString('es-ES')}</div>
+      <div class="conv-note">${prog.cofin_pct}% del presupuesto elegible</div>
+    </div>
+    <div class="conv-item">
+      <div class="conv-label">Aportación propia</div>
+      <div class="conv-value">€${own.toLocaleString('es-ES')}</div>
+      <div class="conv-note">${100-prog.cofin_pct}% cofinanciación</div>
+    </div>
+    <div class="conv-item">
+      <div class="conv-label">Costes indirectos</div>
+      <div class="conv-value">${prog.indirect_pct}%</div>
+      <div class="conv-note">Tarifa plana Erasmus+</div>
+    </div>
+    <div class="conv-item">
+      <div class="conv-label">Inicio elegible</div>
+      <div class="conv-value">Sep 2026</div>
+      <div class="conv-note">hasta Mar 2027</div>
+    </div>
+    <div class="conv-item">
+      <div class="conv-label">Duración</div>
+      <div class="conv-value">12–24 meses</div>
+      <div class="conv-note">tú eliges abajo</div>
+    </div>
+    <div class="conv-item">
+      <div class="conv-label">Deadline</div>
+      <div class="conv-value">15 Mar 2026</div>
+      <div class="conv-note">Convocatoria 2026</div>
+    </div>`;
+
+  document.getElementById('prog_display').value = prog.short;
+}
+
+// ══ PARTNERS ══
+function syncPartners() {
+  const n = parseInt(document.getElementById('n_partners').value) || 2;
+  while (state.partners.length < n)
+    state.partners.push({ id: state.partners.length+1, name:'', city:'', country:'',
+      role: state.partners.length===0?'applicant':'partner', order_index: state.partners.length+1 });
+  state.partners = state.partners.slice(0, n);
+  renderPartners();
+}
+
+function renderPartners() {
+  const n = state.partners.length;
+  document.getElementById('partners-container').innerHTML = state.partners.map((p,i) => `
+    <div class="partner-card ${i===0?'is-applicant':''}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <span class="partner-badge" style="background:${PAX_COLORS[i%PAX_COLORS.length]};">${i+1}</span>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:${PAX_COLORS[i%PAX_COLORS.length]};">
+            ${i===0?'Coordinador / Applicant':'Socio '+(i+1)}
+          </div>
+          <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;">
+            role: ${p.role} · order_index: ${i+1}
+          </div>
+        </div>
+      </div>
+      <div class="g3">
+        <div class="field">
+          <label>Nombre / Acrónimo</label>
+          <input type="text" value="${p.name}" placeholder="Ej. PERMA"
+            oninput="state.partners[${i}].name=this.value">
+        </div>
+        <div class="field">
+          <label>Ciudad</label>
+          <input type="text" value="${p.city}" placeholder="Ej. Madrid"
+            oninput="state.partners[${i}].city=this.value">
+        </div>
+        <div class="field">
+          <label>País</label>
+          <input type="text" value="${p.country}" placeholder="Ej. España"
+            oninput="state.partners[${i}].country=this.value"
+            onblur="autoFillCountryHint(${i})">
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function autoFillCountryHint(i) {
+  // Placeholder for future countries.js integration
+  // When countries.js is loaded: const c = getCountry(state.partners[i].country)
+}
+
+// ══ WORD COUNTER ══
+function updateWordCount(el, counterId, min, max) {
+  state.context[el.id === 'ai_problem' ? 'problem' : el.id === 'ai_targets' ? 'target_groups' : 'approach'] = el.value;
+  const words = el.value.trim() ? el.value.trim().split(/\s+/).length : 0;
+  const el2 = document.getElementById(counterId);
+  if (!el2) return;
+  el2.textContent = `${words} palabras`;
+  if (words === 0) { el2.className = 'word-counter wc-neutral'; return; }
+  if (words < min) { el2.className = 'word-counter wc-low'; }
+  else if (words > max) { el2.className = 'word-counter wc-high'; }
+  else { el2.className = 'word-counter wc-ok'; }
+}
+
+// ══ SUMMARY ══
+function buildSummary() {
+  collect(2);
+  const p = state.project;
+  const partners = state.partners.filter(x => x.name);
+  const countries = [...new Set(partners.map(p=>p.country).filter(Boolean))];
+  const wc1 = p.problem  ? (state.context.problem.trim().split(/\s+/).length)  : 0;
+  const wc2 = p.targets  ? (state.context.target_groups.trim().split(/\s+/).length) : 0;
+  const wc3 = p.approach ? (state.context.approach.trim().split(/\s+/).length) : 0;
+  const wcProblem  = state.context.problem.trim()       ? state.context.problem.trim().split(/\s+/).length       : 0;
+  const wcTargets  = state.context.target_groups.trim() ? state.context.target_groups.trim().split(/\s+/).length : 0;
+  const wcApproach = state.context.approach.trim()      ? state.context.approach.trim().split(/\s+/).length      : 0;
+
+  document.getElementById('summary-container').innerHTML = `
+    <div class="card" style="margin-bottom:14px;">
+      <div class="card-title">Proyecto</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
+        <div style="background:var(--accent);border-radius:var(--r-sm);padding:14px;color:#fff;">
+          <div style="font-size:10px;opacity:.6;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Proyecto</div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;">${p.name||'—'}</div>
+          <div style="font-size:11px;opacity:.65;margin-top:2px;">${state.project.type||'—'}</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:var(--r-sm);padding:14px;">
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Duración</div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;">${p.duration_months} meses</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px;">Inicio: ${p.start_date||'—'}</div>
+        </div>
+        <div style="background:#EFF6FF;border-radius:var(--r-sm);padding:14px;border-top:3px solid #1D4ED8;">
+          <div style="font-size:10px;color:#1D4ED8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Subvención UE</div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#1D4ED8;">€${(p.eu_grant||0).toLocaleString('es-ES')}</div>
+          <div style="font-size:11px;color:#93C5FD;margin-top:2px;">${p.cofin_pct}% UE · ${100-p.cofin_pct}% propio</div>
+        </div>
+      </div>
+      ${p.description?`<div style="font-size:13px;color:var(--text2);background:var(--surface2);padding:10px 14px;border-radius:var(--r-sm);border-left:3px solid var(--accent-bd);font-style:italic;">${p.description}</div>`:''}
+    </div>
+
+    <div class="card" style="margin-bottom:14px;">
+      <div class="card-title">Consorcio · ${partners.length} socios · ${countries.length} países</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;">
+        ${partners.map((p,i)=>`
+          <div style="flex:1;min-width:150px;background:${PAX_COLORS[i%PAX_COLORS.length]}18;border-radius:var(--r-sm);padding:12px 14px;border-left:3px solid ${PAX_COLORS[i%PAX_COLORS.length]};">
+            <div style="font-size:13px;font-weight:700;color:${PAX_COLORS[i%PAX_COLORS.length]};">${p.name||'—'}</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px;">${[p.city,p.country].filter(Boolean).join(', ')||'—'}</div>
+            <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;margin-top:4px;">${p.role==='applicant'?'Coordinador':'Socio'}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px;">
+      <div class="card-title">Textos de contexto (IA)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+        <div style="background:var(--surface2);border-radius:var(--r-sm);padding:12px;">
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Problema</div>
+          <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:600;color:${wcProblem>=200?'var(--accent2)':wcProblem>0?'#B45309':'var(--text3)'};">${wcProblem}</div>
+          <div style="font-size:10px;color:var(--text3);">palabras · objetivo 200–500</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:var(--r-sm);padding:12px;">
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Grupos diana</div>
+          <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:600;color:${wcTargets>=150?'var(--accent2)':wcTargets>0?'#B45309':'var(--text3)'};">${wcTargets}</div>
+          <div style="font-size:10px;color:var(--text3);">palabras · objetivo 150–400</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:var(--r-sm);padding:12px;">
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Enfoque</div>
+          <div style="font-family:'DM Mono',monospace;font-size:18px;font-weight:600;color:${wcApproach>=200?'var(--accent2)':wcApproach>0?'#B45309':'var(--text3)'};">${wcApproach}</div>
+          <div style="font-size:10px;color:var(--text3);">palabras · objetivo 200–500</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ══ EXPORT FOR WIZARD ══
+function exportForWizard() {
+  collect(2);
+  const partners = state.partners.filter(p => p.name);
+  const wizardJSON = {
+    meta: {
+      version: '1.0',
+      tool: 'erasmus-intake',
+      generated_at: new Date().toISOString(),
+      source_module: 'intake',
+    },
+    fields: {
+      proj_name:    state.project.name,
+      proj_type:    state.project.type,
+      proj_desc:    state.project.description,
+      proj_start:   state.project.start_date,
+      months:       String(state.project.duration_months),
+      eu_grant:     String(state.project.eu_grant),
+      cofin_pct:    String(state.project.cofin_pct),
+      indirect_pct: String(state.project.indirect_pct),
+      n_partners:   String(partners.length),
+    },
+    state: {
+      maxReached: 1,
+      partners: partners.map((p,i) => ({
+        id: i+1, name: p.name, city: p.city,
+        country: p.country, role: p.role, order_index: i+1
+      })),
+      routes: {}, wps: [], workerRates: [],
+      wrCounter: 0, perdiemRates: {}, extraDestinations: [],
+    },
+    intake: {
+      program_id: state.program_id,
+      deadline:   state.project.deadline,
+      context: {
+        problem:       state.context.problem,
+        target_groups: state.context.target_groups,
+        approach:      state.context.approach,
+      },
+    }
+  };
+  const name = (state.project.name||'proyecto').toLowerCase().replace(/\s+/g,'-');
+  download(`${name}-wizard-ready.json`, JSON.stringify(wizardJSON, null, 2), 'application/json');
+}
+
+// ══ SAVE / LOAD ══
+function saveIntake() {
+  collect([0,1,2,3].find(i => document.getElementById('page-'+i)?.classList.contains('visible'))||0);
+  const data = { meta:{ version:'1.0', tool:'erasmus-intake', saved_at: new Date().toISOString() }, ...state };
+  const name = (state.project.name||'intake').toLowerCase().replace(/\s+/g,'-');
+  download(`${name}-intake.json`, JSON.stringify(data, null, 2), 'application/json');
+  const hint = document.getElementById('autosave-hint');
+  if (hint) { hint.textContent = '✓ guardado'; setTimeout(()=>hint.textContent='', 3000); }
+}
+
+function loadIntake(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      // Support both intake.json and wizard-ready.json
+      if (data.program_id !== undefined) {
+        // Full intake JSON
+        state = { ...state, ...data };
+        delete state.meta;
+      } else if (data.fields) {
+        // Wizard-ready JSON — reconstruct
+        state.project = {
+          name:            data.fields.proj_name||'',
+          type:            data.fields.proj_type||'',
+          description:     data.fields.proj_desc||'',
+          start_date:      data.fields.proj_start||'2026-09-01',
+          duration_months: parseInt(data.fields.months)||24,
+          deadline:        data.intake?.deadline||'',
+          eu_grant:        parseFloat(data.fields.eu_grant)||500000,
+          cofin_pct:       parseInt(data.fields.cofin_pct)||80,
+          indirect_pct:    parseFloat(data.fields.indirect_pct)||7,
+        };
+        state.partners = (data.state?.partners||[]).map((p,i) => ({...p, order_index:i+1}));
+        if (data.intake?.context) state.context = data.intake.context;
+      }
+      restoreForm();
+      maxStep = 3;
+      goTo(0);
+    } catch(err) { alert('Error al cargar: ' + err.message); }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+function restoreForm() {
+  const set = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined) el.value = val; };
+  set('proj_name',    state.project.name);
+  set('proj_desc',    state.project.description);
+  set('proj_start',   state.project.start_date);
+  set('proj_months',  state.project.duration_months);
+  set('ai_problem',   state.context.problem);
+  set('ai_targets',   state.context.target_groups);
+  set('ai_approach',  state.context.approach);
+  set('n_partners',   state.partners.length);
+  renderPartners();
+  renderConvData();
+  // Restore word counts
+  ['ai_problem','ai_targets','ai_approach'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.dispatchEvent(new Event('input'));
+  });
+}
+
+// ══ UTILS ══
+function download(filename, content, type) {
+  const blob = new Blob([content], {type});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ══ INIT ══
+document.addEventListener('DOMContentLoaded', () => {
+  renderConvData();
+  renderPartners();
+  document.getElementById('proj_start').value = state.project.start_date;
+});
+</script>
+</body>
+</html>
