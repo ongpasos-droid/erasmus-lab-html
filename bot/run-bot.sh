@@ -103,7 +103,6 @@ for TASK_ID in $PENDING; do
   log "──────────────────────────────────────"
   log "Tarea: $TASK_ID — $TITLE"
   log "Rama: $BRANCH"
-  TASK_START=$(date '+%H:%M:%S')
 
   if $DRY_RUN; then
     log "[DRY RUN] Saltando ejecución"
@@ -192,7 +191,7 @@ _Revisión manual requerida antes de merge._" \
   git push origin main 2>/dev/null || true
 
   COMPLETED=$((COMPLETED + 1))
-  log "✅ $TASK_ID completada — inicio: $TASK_START fin: $(date '+%H:%M:%S')"
+  log "✅ $TASK_ID completada"
 
   # Pausa entre tareas
   if [ "$PAUSE_SECONDS" -gt 0 ]; then
