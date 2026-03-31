@@ -443,6 +443,11 @@ body {
   overflow-y: auto;
   white-space: pre;
 }
+.json-preview .jk { color: #7dd3fc; }   /* key */
+.json-preview .js { color: #86efac; }   /* string value */
+.json-preview .jn { color: #fbbf24; }   /* number */
+.json-preview .jb { color: #f472b6; }   /* boolean */
+.json-preview .jx { color: #94a3b8; }   /* null */
 
 /* ══════════════════════════════════════
    PROGRESS INDICATOR
@@ -1983,10 +1988,30 @@ function updateProjectTitle(idx, value) {
 // ═══════════════════════════════════════
 // JSON PREVIEW
 // ═══════════════════════════════════════
+function syntaxHighlight(json) {
+  const escaped = json
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  return escaped.replace(
+    /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+    (match) => {
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) return `<span class="jk">${match}</span>`;
+        return `<span class="js">${match}</span>`;
+      }
+      if (/true|false/.test(match)) return `<span class="jb">${match}</span>`;
+      if (/null/.test(match)) return `<span class="jx">${match}</span>`;
+      return `<span class="jn">${match}</span>`;
+    }
+  );
+}
+
 function refreshPreview() {
   collectFields();
   const output = buildExportJSON();
-  document.getElementById('jsonPreview').textContent = JSON.stringify(output, null, 2);
+  const raw = JSON.stringify(output, null, 2);
+  document.getElementById('jsonPreview').innerHTML = syntaxHighlight(raw);
 }
 
 // ═══════════════════════════════════════
@@ -1995,12 +2020,41 @@ function refreshPreview() {
 
 function buildExportJSON() {
   collectFields();
+
+  // Completeness: count filled vs total partner scalar fields
+  const partnerFields = [
+    'country','organisation_name','acronym','foundation_date','pic_oid',
+    'organisation_type','legal_name_national','national_id_vat','website',
+    'organisation_email','phone_1','phone_2','address','post_code','city','region',
+    'is_public_body','is_non_profit','has_accreditation','accreditation_type',
+    'accreditation_reference','brief_presentation','relevant_experience',
+    'staff_size','eu_projects_per_year','has_training_facilities',
+    'has_digital_infrastructure','expertise_areas','erasmus_roles'
+  ];
+  const filledScalar = partnerFields.filter(f => {
+    const v = state[f];
+    return v !== null && v !== undefined && v !== '' && !(Array.isArray(v) && v.length === 0);
+  }).length;
+  const filledArrays = ['contacts','key_staff','previous_projects','associated_partners']
+    .reduce((sum, k) => sum + (Array.isArray(state[k]) ? state[k].length : 0), 0);
+
   return {
     meta: {
+      schema_version: '1.0',
       version: '1.0',
       tool: 'pif-wizard',
       generated_at: new Date().toISOString(),
       source_module: 'pif'
+    },
+    ecosystem: {
+      tool: 'pif-wizard',
+      version: '1.0',
+      compatible_with: ['intake', 'calculator', 'planner']
+    },
+    completeness: {
+      partner_fields_filled: filledScalar,
+      partner_fields_total: partnerFields.length,
+      array_items_total: filledArrays
     },
     partner: {
       partner_internal_id: state.partner_internal_id,
@@ -2051,16 +2105,34 @@ function buildExportJSON() {
 }
 
 function exportJSON() {
+  const REQUIRED_FIELDS = {
+    country: 'Country',
+    organisation_name: 'Organisation Name',
+    acronym: 'Acronym',
+    organisation_type: 'Organisation Type',
+    organisation_email: 'Organisation Email'
+  };
+  const missing = Object.entries(REQUIRED_FIELDS)
+    .filter(([k]) => !state[k] || state[k].toString().trim() === '')
+    .map(([, label]) => label);
+  if (missing.length > 0) {
+    showToast('⚠ Campos obligatorios vacíos: ' + missing.join(', ') + '. El JSON se exportará igualmente.');
+  }
+
   const data = buildExportJSON();
-  const name = (state.acronym || state.organisation_name || 'partner').replace(/\s+/g, '_');
+  const acronym = (state.acronym || state.organisation_name || 'PARTNER')
+    .toUpperCase().replace(/\s+/g, '_').replace(/[^A-Z0-9_]/g, '');
+  const date = new Date().toISOString().slice(0, 10);
+  const filename = `${acronym}_PIF_${date}.json`;
+
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${name}_PIF.json`;
+  a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
-  showToast('JSON exportado: ' + a.download);
+  if (missing.length === 0) showToast('JSON exportado: ' + filename);
 }
 
 function triggerImport() {
