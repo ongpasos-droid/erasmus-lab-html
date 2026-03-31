@@ -52,7 +52,7 @@
     {
       "id": "task-004",
       "priority": 4,
-      "status": "pending",
+      "status": "completed",
       "branch": "bot/improve-json-export",
       "title": "Mejorar compatibilidad del JSON exportado con el ecosistema",
       "prompt": "Revisa la función buildExportJSON() en modules/pif-wizard.html y mejórala:\n1. Añade al bloque 'meta' un campo 'schema_version' con valor '1.0'.\n2. Añade un bloque 'ecosystem' con: { tool: 'pif-wizard', version: '1.0', compatible_with: ['intake', 'calculator', 'planner'] }.\n3. El JSON exportado debe incluir un resumen de completitud: cuántos campos están rellenos vs total.\n4. Añade validación antes de exportar: si faltan campos obligatorios, muestra un warning (pero permite exportar).\n5. Mejora el nombre del archivo: usa formato 'ACRONYM_PIF_YYYY-MM-DD.json'.\n6. En la preview JSON del paso final, colorea las claves y valores para mejor legibilidad (syntax highlighting básico con spans).\nNo toques otros pasos del wizard. Solo exportación y preview.",
