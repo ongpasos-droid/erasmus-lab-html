@@ -64,7 +64,7 @@
     {
       "id": "task-005",
       "priority": 5,
-      "status": "pending",
+      "status": "completed",
       "branch": "bot/intake-module-v2",
       "title": "Crear módulo Intake v2 integrado en el ecosistema",
       "prompt": "Crea el archivo 'modules/intake-wizard.html', el módulo M0 del ecosistema. Es la primera herramienta para arrancar un proyecto nuevo. Estructura en 3 pasos:\n\nPASO 1 — PROGRAMA: El usuario selecciona la convocatoria. Por ahora solo 'KA3 Policy Support — Erasmus+ Youth 2026'. Al seleccionar, autocompleta: deadline 15/03/2026, start_date entre 01/09/2026 y 01/03/2027, duration 12-24 meses, eu_grant max 500.000€, cofin_pct 80%, indirect_pct 7%.\n\nPASO 2 — PROYECTO: nombre/acrónimo, consorcio dinámico (añadir/eliminar socios con nombre, ciudad, país, rol). Primer socio = applicant.\n\nPASO 3 — CONTEXTO: 3 campos de texto largo con word counter: Problema/Necesidad (200-500 palabras), Grupos destinatarios (150-400 palabras), Enfoque y propuesta de valor (200-500 palabras).\n\nFINAL: Exportar JSON compatible con el calculator (estructura con meta, fields, state, intake). Guardar/cargar intake.\n\nDiseño: misma paleta que modules/pif-wizard.html (verde oscuro, fondo cálido, Syne+DM Sans). HTML autocontenido.",
