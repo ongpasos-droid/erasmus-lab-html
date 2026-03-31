@@ -1,0 +1,26 @@
+Archivo creado en `modules/ecosystem-hub.html`. Aquí un resumen de lo que incluye:
+
+**Layout**
+- Sidebar izquierdo fijo con branding, navegación por secciones y footer con info del namespace
+- Topbar con breadcrumb, indicador de almacenamiento y botón "Limpiar datos"
+- Contenido principal con ancho máximo de 1100px
+
+**Dashboard**
+- **Banner de bienvenida** con contadores dinámicos (módulos, disponibles, KB guardados)
+- **Info strip** explicando el estado beta y el namespace `efs_`
+- **Grid de 6 module cards** — cada una con icono SVG, ID, nombre, descripción, tags y estado
+- **Panel de almacenamiento** — muestra en tiempo real las claves en localStorage (incluyendo `pif_wizard_state` legacy) y el registro de módulos
+
+**Módulos**
+| Módulo | Estado | Icono |
+|---|---|---|
+| PIF Wizard | `available` · clickable → `pif-wizard.html` | verde |
+| Intake Form | `soon` | dorado |
+| Budget Calculator | `soon` | azul |
+| Project Planner | `soon` | ámbar |
+| Reports | `soon` | púrpura |
+| Developer Hub | `soon` | slate |
+
+**Namespace `efs_`**
+- `EfsStorage` — wrapper sobre localStorage con prefijo `efs_` (métodos: `set`, `get`, `remove`, `keys`, `clear`, `sizeKB`)
+- En init registra `efs_hub_last_visit` y muestra todas las claves existentes incluyendo las legacy de módulos anteriores
