@@ -1,0 +1,19 @@
+Bien. Los dos bloques están en su lugar. Aquí un resumen de todos los cambios aplicados:
+
+---
+
+**Cambios CSS:**
+
+| Área | Mejora |
+|---|---|
+| **Step nav** | `mask-image` con fade en ambos bordes para indicar scroll. Scrollbar oculta. Tabs más compactos (`76px`, sin `step-tab__num`). |
+| **Inputs/selects** | `font-size: 16px` para evitar el zoom automático de iOS. `min-height: 44px` en todos. |
+| **Botones** | `min-height: 44px` en `.btn`, `38px` en `.btn--sm`. Los de step-actions son `width: 100%`. |
+| **Step actions** | `column-reverse` (siguiente arriba) + sticky al bottom con sombra y fondo para no solapar contenido. |
+| **Array items** | Header con `flex-wrap` para que el botón eliminar no choque con el título largo. `padding` reducido. |
+| **Country dropdown** | `position: fixed` bottom sheet al 52vh con `border-radius` en la parte superior. Items de `min-height: 44px`. |
+| **Paste modal** | Bottom sheet (`align-items: flex-end`, radius arriba). Acciones en columna invertida, botones full-width. |
+| **Toast** | Reposicionado a `bottom: 80px` para no quedar tapado por el sticky de actions. |
+| **400px (iPhone SE)** | Botones del app-bar colapsan a solo icono. Info-cards en 1 columna. |
+
+**Cambio JS:** `scrollIntoView({ inline: 'center' })` al activar cada tab, para que el step activo siempre quede visible en el centro del nav.
