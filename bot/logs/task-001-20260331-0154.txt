@@ -1,0 +1,12 @@
+Commit `c74e04b` creado. Resumen de los 14 fixes aplicados:
+
+**Bugs corregidos:**
+
+| # | Bug | Fix |
+|---|-----|-----|
+| 1 | `esc()` no escapaba `'` → crash JS con "Côte d'Ivoire" en el dropdown | Añadido `.replace(/'/g,'&#39;')` |
+| 2–3 | Country dropdown: `onmousedown` inline roto en móvil (touch) | Event delegation con `mousedown` + `touchstart/move/end` en `setupCountryDropdown()` |
+| 4 | `importJSON` asignaba arrays sin validar tipo → crash en `.push()` si JSON malformado | Guardas `Array.isArray()` en ambos paths (formato plano y exportación estándar) |
+| 5 | `loadFromLocal` mismo problema | Mismas guardas |
+| 6 | Sin feedback visual en campos obligatorios | `validateStep1()` con border rojo + mensaje inline; se limpia con `oninput` |
+| 7–9 | `renderContacts/Staff/Projects`: `onchange` en campo nombre hacía re-render completo → perdía foco al hacer clic en otro campo del mismo item | `oninput` + helpers `updateContactName/StaffName/ProjectTitle` que solo actualizan el `<span>` del título |
