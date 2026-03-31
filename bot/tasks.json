@@ -40,7 +40,7 @@
     {
       "id": "task-003",
       "priority": 3,
-      "status": "pending",
+      "status": "completed",
       "branch": "bot/unify-ecosystem-app",
       "title": "Crear app unificada del ecosistema con navegación entre módulos",
       "prompt": "Crea un nuevo archivo llamado 'modules/ecosystem-hub.html' que sirva como punto de entrada unificado del ecosistema EU Funding School. Debe:\n1. Tener un dashboard principal que muestre los módulos disponibles como cards (Intake, PIF Wizard, Calculator, Planner, etc.).\n2. Cada card muestra: icono, nombre del módulo, descripción corta, estado (disponible/próximamente).\n3. Los módulos disponibles (PIF Wizard por ahora) se abren en la misma ventana.\n4. Usa la misma paleta visual: fondo cálido #f5f3ef, verde oscuro #1a3a2a como primario, tipografías Syne + DM Sans + DM Mono.\n5. Incluye una barra lateral o superior con el nombre del ecosistema.\n6. Todo en un solo archivo HTML autocontenido.\n7. Prepáralo para que los módulos compartan datos vía localStorage con un namespace común 'efs_' (EU Funding School).\nEste es el esqueleto del hub, no necesita funcionalidad compleja aún.",
