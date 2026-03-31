@@ -1,0 +1,15 @@
+Archivo creado en `modules/intake-wizard.html`. Resumen de lo implementado:
+
+**Estructura de 3 pasos + exportación:**
+
+- **Paso 1 — Programa:** Radio buttons para seleccionar convocatoria. Al elegir "KA3 Policy Support — Erasmus+ Youth 2026" se despliega un panel de autocompletado con los 6 parámetros (deadline, ventana de inicio, duración, subvención max, cofinanciación, costes indirectos). Incluye selector de fecha de inicio con rango restringido a la ventana válida.
+
+- **Paso 2 — Proyecto:** Nombre completo, acrónimo (auto-uppercase) y área temática. Consorcio dinámico con añadir/eliminar socios (nombre, ciudad, país, rol). El primer socio se marca automáticamente como Applicant con badge visual. Contador de países en tiempo real con validación del mínimo de 3.
+
+- **Paso 3 — Contexto:** 3 áreas de texto con word counter animado (barra de progreso + estado: vacío / corto / bien / largo) para Problema/Necesidad (200–500), Grupos destinatarios (150–400) y Enfoque (200–500).
+
+- **Paso 4 — Exportar:** Vista previa del JSON, botones descargar y copiar, resumen en chips.
+
+**Compatibilidad con la calculadora:** El JSON exportado incluye exactamente los mismos campos `fields` (`proj_name`, `proj_start`, `months`, `eu_grant`, `cofin_pct`, `indirect_pct`, `n_partners`) y `state.partners` que usa `wizard.html` al cargar un proyecto, más una sección `intake` con los textos de contexto.
+
+**Persistencia:** Autoguardado en `localStorage` (debounce 800ms) + guardar/cargar desde archivo JSON por los botones de la app bar.

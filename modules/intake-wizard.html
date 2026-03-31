@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intake Wizard — M0 · Erasmus+ Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════
+   RESET & VARIABLES
+   ══════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #f5f3ef;
+  --bg-warm:     #faf8f5;
+  --surface:     #ffffff;
+  --surface-alt: #f0ede8;
+  --border:      #e2ddd5;
+  --border-light:#ece8e1;
+
+  --green-900:   #1a3a2a;
+  --green-800:   #1f4d35;
+  --green-700:   #276841;
+  --green-600:   #2d7a4a;
+  --green-500:   #3a9d60;
+  --green-400:   #5cb87a;
+  --green-100:   #e6f5ec;
+  --green-50:    #f0faf4;
+
+  --gold-600:    #b8860b;
+  --gold-500:    #d4a017;
+  --gold-400:    #e6b422;
+  --gold-100:    #fef9e7;
+
+  --text:        #1a1a1a;
+  --text-secondary: #555;
+  --text-muted:  #888;
+  --text-inverse:#fff;
+
+  --danger:      #c0392b;
+  --danger-bg:   #fdf2f2;
+  --success:     #27ae60;
+  --success-bg:  #eafaf1;
+  --warning:     #f39c12;
+  --warning-bg:  #fef9e7;
+  --info:        #2980b9;
+  --info-bg:     #eaf2f8;
+
+  --radius:      10px;
+  --radius-sm:   6px;
+  --radius-lg:   14px;
+  --shadow:      0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:   0 4px 12px rgba(0,0,0,0.08);
+
+  --font-heading: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+
+  --header-h:    56px;
+  --max-w:       820px;
+}
+
+html { font-size: 15px; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ══════════════════════════════════════
+   APP BAR
+   ══════════════════════════════════════ */
+.app-bar {
+  position: sticky; top: 0; z-index: 100;
+  height: var(--header-h);
+  background: linear-gradient(135deg, var(--green-900) 0%, var(--green-800) 100%);
+  color: var(--text-inverse);
+  display: flex; align-items: center;
+  padding: 0 24px;
+  box-shadow: 0 2px 12px rgba(26,58,42,0.3);
+}
+.app-bar__brand {
+  font-family: var(--font-heading);
+  font-weight: 700; font-size: 1.05rem;
+  display: flex; align-items: center; gap: 10px;
+}
+.app-bar__brand .logo {
+  width: 28px; height: 28px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .85rem;
+}
+.app-bar__tag {
+  font-size: .62rem; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.75);
+  padding: 2px 8px; border-radius: 20px;
+}
+.app-bar__spacer { flex: 1; }
+.app-bar__actions { display: flex; gap: 6px; }
+.app-bar__btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: #fff; border-radius: var(--radius-sm);
+  padding: 6px 14px; font-size: .8rem;
+  font-family: var(--font-body); font-weight: 500;
+  cursor: pointer; display: flex; align-items: center; gap: 5px;
+  transition: all .2s;
+}
+.app-bar__btn:hover { background: rgba(255,255,255,0.22); }
+.app-bar__btn--accent {
+  background: var(--gold-500);
+  border-color: var(--gold-600);
+  color: var(--green-900); font-weight: 700;
+}
+.app-bar__btn--accent:hover { background: var(--gold-400); }
+
+#importInput { display: none; }
+
+/* ══════════════════════════════════════
+   STEP NAV
+   ══════════════════════════════════════ */
+.step-nav {
+  position: sticky; top: var(--header-h); z-index: 90;
+  background: var(--surface);
+  border-bottom: 2px solid var(--border);
+}
+.step-nav__inner {
+  display: flex;
+  max-width: var(--max-w); margin: 0 auto;
+}
+.step-tab {
+  flex: 1; padding: 14px 12px 11px;
+  text-align: center; cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all .2s; user-select: none;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.step-tab:hover { background: var(--bg-warm); }
+.step-tab.active {
+  color: var(--green-700);
+  border-bottom-color: var(--green-600);
+}
+.step-tab.active .step-tab__num {
+  background: var(--green-700);
+  border-color: var(--green-700);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(39,104,65,0.12);
+}
+.step-tab.completed { color: var(--green-600); }
+.step-tab.completed .step-tab__num {
+  background: var(--green-600);
+  border-color: var(--green-600);
+  color: #fff;
+}
+.step-tab.locked { color: var(--text-muted); cursor: default; }
+.step-tab__num {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: .65rem; font-weight: 700;
+  transition: all .2s;
+}
+.step-tab__label {
+  font-size: .72rem; font-weight: 600;
+  letter-spacing: .03em; text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════
+   MAIN
+   ══════════════════════════════════════ */
+.main {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 32px 20px 100px;
+}
+
+.step-panel { display: none; animation: fadeIn .28s ease; }
+.step-panel.active { display: block; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════
+   TYPOGRAPHY HELPERS
+   ══════════════════════════════════════ */
+.page-title {
+  font-family: var(--font-heading);
+  font-weight: 800; font-size: clamp(1.4rem, 4vw, 2rem);
+  color: var(--green-900);
+  letter-spacing: -.02em;
+  margin-bottom: 6px;
+}
+.page-sub {
+  font-size: .9rem; color: var(--text-secondary);
+  line-height: 1.65; margin-bottom: 28px;
+}
+
+/* ══════════════════════════════════════
+   CARDS
+   ══════════════════════════════════════ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 26px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+.card--accent { border-top: 3px solid var(--green-600); }
+.card--gold   { border-top: 3px solid var(--gold-500); }
+.card--info   { border-top: 3px solid var(--info); }
+
+.card__title {
+  font-family: var(--font-heading);
+  font-weight: 700; font-size: 1.05rem;
+  color: var(--green-900);
+  margin-bottom: 4px;
+  display: flex; align-items: center; gap: 8px;
+}
+.card__subtitle {
+  font-size: .83rem; color: var(--text-muted);
+  margin-bottom: 18px;
+}
+
+/* Section label inside card */
+.section-label {
+  font-size: .68rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .1em;
+  color: var(--text-muted);
+  padding-bottom: 10px; margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex; align-items: center; gap: 6px;
+}
+.section-label::before {
+  content: ''; width: 3px; height: 11px;
+  border-radius: 2px;
+  background: var(--green-600); flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════
+   PROGRAMME SELECTOR
+   ══════════════════════════════════════ */
+.programme-list {
+  display: flex; flex-direction: column; gap: 10px;
+  margin-bottom: 24px;
+}
+.programme-option {
+  position: relative;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: all .2s;
+  background: var(--bg-warm);
+  display: flex; align-items: flex-start; gap: 14px;
+}
+.programme-option:hover {
+  border-color: var(--green-400);
+  background: var(--green-50);
+}
+.programme-option.selected {
+  border-color: var(--green-600);
+  background: var(--green-50);
+  box-shadow: 0 0 0 3px rgba(45,122,74,0.10);
+}
+.programme-option input[type="radio"] {
+  margin-top: 3px; flex-shrink: 0;
+  accent-color: var(--green-600);
+  width: 16px; height: 16px;
+}
+.programme-option__body { flex: 1; }
+.programme-option__name {
+  font-family: var(--font-heading);
+  font-weight: 700; font-size: .97rem;
+  color: var(--green-900); margin-bottom: 4px;
+}
+.programme-option__meta {
+  font-size: .78rem; color: var(--text-secondary);
+  line-height: 1.5;
+}
+.programme-option__tags {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
+}
+.tag {
+  font-family: var(--font-mono);
+  font-size: .67rem; padding: 3px 9px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.tag--green { border-color: var(--green-400); color: var(--green-700); background: var(--green-50); }
+.tag--gold  { border-color: var(--gold-400);  color: var(--gold-600);  background: var(--gold-100); }
+.tag--info  { border-color: #93c5fd; color: var(--info); background: var(--info-bg); }
+.tag--coming-soon {
+  border-color: var(--border);
+  color: var(--text-muted);
+  background: var(--surface-alt);
+  font-style: italic;
+}
+.programme-option.disabled {
+  opacity: .55; cursor: not-allowed;
+}
+.programme-option.disabled:hover {
+  border-color: var(--border);
+  background: var(--bg-warm);
+}
+
+/* Autocomplete info grid */
+.autocomplete-panel {
+  display: none;
+  background: var(--green-50);
+  border: 1px solid var(--green-100);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-top: 6px;
+  animation: fadeIn .2s ease;
+}
+.autocomplete-panel.visible { display: block; }
+.autocomplete-panel__title {
+  font-size: .72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .08em;
+  color: var(--green-700); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.autocomplete-panel__title::before {
+  content: '✓'; font-size: .75rem;
+  background: var(--green-600); color: #fff;
+  width: 16px; height: 16px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+.info-chip {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+.info-chip__label {
+  font-size: .65rem; text-transform: uppercase;
+  letter-spacing: .05em; color: var(--text-muted);
+  font-weight: 600; margin-bottom: 2px;
+}
+.info-chip__value {
+  font-family: var(--font-heading);
+  font-weight: 700; font-size: .95rem;
+  color: var(--green-900);
+}
+.info-chip__value.gold { color: var(--gold-600); }
+
+/* ══════════════════════════════════════
+   FORM ELEMENTS
+   ══════════════════════════════════════ */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.form-grid--3 { grid-template-columns: 1fr 1fr 1fr; }
+.form-grid .full { grid-column: 1 / -1; }
+
+.field { display: flex; flex-direction: column; }
+.field label {
+  font-size: .72rem; font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.field label .req { color: var(--danger); margin-left: 2px; }
+
+.field input, .field select, .field textarea {
+  font-family: var(--font-body);
+  font-size: .9rem;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-warm);
+  color: var(--text);
+  transition: border-color .18s, box-shadow .18s;
+  outline: none;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--green-500);
+  box-shadow: 0 0 0 3px rgba(58,157,96,0.13);
+  background: var(--surface);
+}
+.field textarea {
+  resize: vertical; min-height: 160px; line-height: 1.65;
+}
+.field select { cursor: pointer; }
+.field input[readonly] {
+  background: var(--surface-alt);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+/* Word counter */
+.word-counter {
+  font-family: var(--font-mono);
+  font-size: .7rem; margin-top: 5px;
+  text-align: right;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.word-counter__bar {
+  flex: 1; height: 3px;
+  background: var(--border);
+  border-radius: 3px; margin-right: 8px;
+  overflow: hidden;
+}
+.word-counter__fill {
+  height: 100%; border-radius: 3px;
+  transition: width .3s, background-color .3s;
+}
+.word-counter__text { white-space: nowrap; }
+.word-counter.short  .word-counter__text { color: var(--warning); }
+.word-counter.good   .word-counter__text { color: var(--success); }
+.word-counter.long   .word-counter__text { color: var(--danger); }
+.word-counter.short  .word-counter__fill { background: var(--warning); }
+.word-counter.good   .word-counter__fill { background: var(--success); }
+.word-counter.long   .word-counter__fill { background: var(--danger); }
+.word-counter.empty  .word-counter__text { color: var(--text-muted); }
+.word-counter.empty  .word-counter__fill { background: var(--border); }
+
+/* Hint text */
+.field-hint {
+  font-size: .75rem; color: var(--text-muted);
+  margin-top: 4px; line-height: 1.5;
+}
+
+/* ══════════════════════════════════════
+   BUTTONS
+   ══════════════════════════════════════ */
+.btn {
+  font-family: var(--font-body);
+  font-weight: 600; font-size: .86rem;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  border: none; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: all .2s;
+}
+.btn--primary   { background: var(--green-700); color: #fff; }
+.btn--primary:hover { background: var(--green-600); }
+.btn--secondary { background: var(--surface-alt); color: var(--text); border: 1px solid var(--border); }
+.btn--secondary:hover { background: var(--border-light); }
+.btn--danger    { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(192,57,43,.2); }
+.btn--danger:hover { background: #fce4e4; }
+.btn--gold      { background: var(--gold-500); color: var(--green-900); }
+.btn--gold:hover { background: var(--gold-400); }
+.btn--sm { padding: 6px 12px; font-size: .78rem; }
+
+/* ══════════════════════════════════════
+   CONSORTIUM — DYNAMIC ITEMS
+   ══════════════════════════════════════ */
+.partner-item {
+  background: var(--bg-warm);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 12px;
+  position: relative;
+}
+.partner-item--applicant {
+  border-left: 3px solid var(--green-600);
+}
+.partner-item__header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.partner-item__title {
+  font-family: var(--font-heading);
+  font-weight: 600; font-size: .93rem;
+  color: var(--green-800);
+  display: flex; align-items: center; gap: 8px;
+}
+.badge-applicant {
+  font-family: var(--font-mono);
+  font-size: .62rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+  background: var(--green-700); color: #fff;
+  padding: 2px 8px; border-radius: 3px;
+}
+.badge-partner {
+  font-family: var(--font-mono);
+  font-size: .62rem;
+  background: var(--green-100); color: var(--green-700);
+  padding: 2px 8px; border-radius: 3px;
+}
+.array-add {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; width: 100%; padding: 14px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  background: transparent; color: var(--text-muted);
+  font-family: var(--font-body); font-size: .86rem;
+  font-weight: 500; cursor: pointer;
+  transition: all .2s; margin-top: 8px;
+}
+.array-add:hover {
+  border-color: var(--green-500);
+  color: var(--green-600);
+  background: var(--green-50);
+}
+
+/* Consortium summary count */
+.consortium-count {
+  font-family: var(--font-mono);
+  font-size: .72rem; color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ══════════════════════════════════════
+   STEP ACTIONS (bottom nav)
+   ══════════════════════════════════════ */
+.step-actions {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 32px; padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+}
+
+/* ══════════════════════════════════════
+   TOAST
+   ══════════════════════════════════════ */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--green-900); color: #fff;
+  padding: 10px 20px; border-radius: var(--radius-sm);
+  font-size: .85rem; font-weight: 500;
+  box-shadow: var(--shadow-md);
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s;
+  z-index: 200;
+  display: flex; align-items: center; gap: 8px;
+  white-space: nowrap;
+}
+.toast.visible { opacity: 1; pointer-events: auto; }
+.toast--success { background: var(--success); }
+.toast--error   { background: var(--danger); }
+
+/* ══════════════════════════════════════
+   EXPORT PANEL (Step final)
+   ══════════════════════════════════════ */
+.export-panel {
+  background: var(--green-900);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-top: 10px;
+}
+.export-panel pre {
+  color: #b8e6c8;
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  line-height: 1.55;
+  overflow-x: auto;
+  max-height: 280px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.export-panel pre::-webkit-scrollbar { width: 5px; height: 5px; }
+.export-panel pre::-webkit-scrollbar-track { background: rgba(255,255,255,.05); }
+.export-panel pre::-webkit-scrollbar-thumb { background: rgba(255,255,255,.2); border-radius: 3px; }
+
+/* ══════════════════════════════════════
+   COMPLETION BANNER
+   ══════════════════════════════════════ */
+.completion-banner {
+  text-align: center;
+  padding: 40px 20px 28px;
+}
+.completion-banner__icon { font-size: 3.2rem; margin-bottom: 12px; }
+.completion-banner__title {
+  font-family: var(--font-heading);
+  font-weight: 800; font-size: 1.6rem;
+  color: var(--green-900); margin-bottom: 8px;
+}
+.completion-banner__sub {
+  font-size: .92rem; color: var(--text-secondary);
+  max-width: 500px; margin: 0 auto 24px;
+  line-height: 1.65;
+}
+.export-actions {
+  display: flex; justify-content: center; gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ══════════════════════════════════════
+   PROGRESS INDICATOR
+   ══════════════════════════════════════ */
+.progress-bar {
+  height: 3px;
+  background: var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.progress-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green-600), var(--green-500));
+  transition: width .4s ease;
+  border-radius: 0 3px 3px 0;
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════ */
+@media (max-width: 640px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid--3 { grid-template-columns: 1fr 1fr; }
+  .info-grid { grid-template-columns: 1fr 1fr; }
+  .app-bar__btn span { display: none; }
+  .step-tab__label { display: none; }
+  .main { padding: 20px 14px 80px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     APP BAR
+     ══════════════════════════════════════ -->
+<header class="app-bar">
+  <div class="app-bar__brand">
+    <div class="logo">⬡</div>
+    Intake Wizard
+    <span class="app-bar__tag">M0</span>
+  </div>
+  <div class="app-bar__spacer"></div>
+  <div class="app-bar__actions">
+    <button class="app-bar__btn" onclick="saveToStorage()">
+      💾 <span>Guardar</span>
+    </button>
+    <button class="app-bar__btn" onclick="document.getElementById('importInput').click()">
+      📂 <span>Cargar</span>
+    </button>
+    <input type="file" id="importInput" accept=".json" onchange="loadFromFile(this)">
+    <button class="app-bar__btn app-bar__btn--accent" onclick="exportJSON()">
+      ↓ <span>Exportar JSON</span>
+    </button>
+  </div>
+</header>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar">
+  <div class="progress-bar__fill" id="progressFill" style="width: 33%"></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     STEP NAV
+     ══════════════════════════════════════ -->
+<nav class="step-nav">
+  <div class="step-nav__inner">
+    <div class="step-tab active" id="tab-0" onclick="goToStep(0)">
+      <div class="step-tab__num">1</div>
+      <div class="step-tab__label">Programa</div>
+    </div>
+    <div class="step-tab locked" id="tab-1" onclick="goToStep(1)">
+      <div class="step-tab__num">2</div>
+      <div class="step-tab__label">Proyecto</div>
+    </div>
+    <div class="step-tab locked" id="tab-2" onclick="goToStep(2)">
+      <div class="step-tab__num">3</div>
+      <div class="step-tab__label">Contexto</div>
+    </div>
+    <div class="step-tab locked" id="tab-3" onclick="goToStep(3)">
+      <div class="step-tab__num">✓</div>
+      <div class="step-tab__label">Exportar</div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════
+     MAIN CONTENT
+     ══════════════════════════════════════ -->
+<main class="main">
+
+  <!-- ─── PASO 1: PROGRAMA ─── -->
+  <section class="step-panel active" id="panel-0">
+    <h1 class="page-title">Selecciona la convocatoria</h1>
+    <p class="page-sub">Elige el programa Erasmus+ al que presentarás el proyecto. Los parámetros clave se autocompletan automáticamente.</p>
+
+    <div class="card card--accent">
+      <div class="section-label">Convocatorias disponibles</div>
+
+      <div class="programme-list">
+        <!-- KA3 2026 -->
+        <label class="programme-option" id="opt-ka3-2026" onclick="selectProgramme('ka3-youth-2026')">
+          <input type="radio" name="programme" value="ka3-youth-2026" id="radio-ka3-2026">
+          <div class="programme-option__body">
+            <div class="programme-option__name">KA3 Policy Support — Erasmus+ Youth 2026</div>
+            <div class="programme-option__meta">Apoyo a reformas de políticas de juventud. Consorcios transnacionales de mínimo 3 países del programa Erasmus+.</div>
+            <div class="programme-option__tags">
+              <span class="tag tag--green">Youth</span>
+              <span class="tag tag--green">KA3</span>
+              <span class="tag tag--gold">Deadline: 15/03/2026</span>
+              <span class="tag tag--info">Max 500.000€</span>
+            </div>
+          </div>
+        </label>
+
+        <!-- KA2 Placeholder -->
+        <label class="programme-option disabled" title="Próximamente">
+          <input type="radio" name="programme" value="" disabled>
+          <div class="programme-option__body">
+            <div class="programme-option__name">KA2 Cooperation — Erasmus+ Youth 2026</div>
+            <div class="programme-option__meta">Asociaciones de cooperación para la juventud. Convocatoria en preparación.</div>
+            <div class="programme-option__tags">
+              <span class="tag tag--coming-soon">Próximamente</span>
+            </div>
+          </div>
+        </label>
+
+        <!-- KA1 Placeholder -->
+        <label class="programme-option disabled" title="Próximamente">
+          <input type="radio" name="programme" value="" disabled>
+          <div class="programme-option__body">
+            <div class="programme-option__name">KA1 Learning Mobility — Erasmus+ Youth 2026</div>
+            <div class="programme-option__meta">Movilidades de aprendizaje para jóvenes y profesionales de juventud.</div>
+            <div class="programme-option__tags">
+              <span class="tag tag--coming-soon">Próximamente</span>
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <!-- Autocomplete panel -->
+      <div class="autocomplete-panel" id="autocompletePanel">
+        <div class="autocomplete-panel__title">Parámetros autocompletados</div>
+        <div class="info-grid" id="autoParamsGrid">
+          <!-- filled by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Fecha de inicio -->
+    <div class="card" id="startDateCard" style="display:none">
+      <div class="card__title">📅 Fecha de inicio del proyecto</div>
+      <div class="card__subtitle">La convocatoria establece una ventana de inicio válida. Selecciona la fecha prevista.</div>
+      <div class="form-grid">
+        <div class="field">
+          <label for="proj_start">Fecha de inicio <span class="req">*</span></label>
+          <input type="date" id="proj_start" min="2026-09-01" max="2027-03-01"
+                 onchange="state.proj_start = this.value; autoSave()">
+        </div>
+        <div class="field">
+          <label for="proj_duration">Duración (meses) <span class="req">*</span></label>
+          <input type="number" id="proj_duration" min="12" max="24" value="24" placeholder="12–24"
+                 onchange="state.proj_duration = parseInt(this.value); autoSave()">
+          <span class="field-hint">Entre 12 y 24 meses.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-actions">
+      <div></div>
+      <button class="btn btn--primary" onclick="validateStep0()">
+        Siguiente: Proyecto →
+      </button>
+    </div>
+  </section>
+
+  <!-- ─── PASO 2: PROYECTO ─── -->
+  <section class="step-panel" id="panel-1">
+    <h1 class="page-title">Identidad del proyecto</h1>
+    <p class="page-sub">Define el nombre, acrónimo y el consorcio transnacional. El primer socio es siempre el <strong>applicant</strong> (entidad coordinadora).</p>
+
+    <!-- Nombre y acrónimo -->
+    <div class="card card--accent">
+      <div class="section-label">Datos básicos del proyecto</div>
+      <div class="form-grid">
+        <div class="field full">
+          <label for="proj_name">Nombre completo del proyecto <span class="req">*</span></label>
+          <input type="text" id="proj_name" placeholder="p.ej. Youth Policy Reform Through Evidence-Based Action"
+                 oninput="state.proj_name = this.value; autoSave()">
+        </div>
+        <div class="field">
+          <label for="proj_acronym">Acrónimo <span class="req">*</span></label>
+          <input type="text" id="proj_acronym" placeholder="p.ej. YOUTHPREA"
+                 oninput="state.proj_acronym = this.value.toUpperCase(); this.value = state.proj_acronym; autoSave()">
+        </div>
+        <div class="field">
+          <label for="proj_topic">Área temática principal</label>
+          <select id="proj_topic" onchange="state.proj_topic = this.value; autoSave()">
+            <option value="">— Seleccionar —</option>
+            <option>Participación juvenil</option>
+            <option>Trabajo con jóvenes</option>
+            <option>Educación no formal</option>
+            <option>Voluntariado europeo</option>
+            <option>Igualdad e inclusión</option>
+            <option>Sostenibilidad y medio ambiente</option>
+            <option>Ciudadanía digital</option>
+            <option>Salud y bienestar</option>
+            <option>Empleo juvenil</option>
+            <option>Política de juventud</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Consorcio -->
+    <div class="card">
+      <div class="card__title">🤝 Consorcio transnacional</div>
+      <div class="card__subtitle">Añade las organizaciones socias. Mínimo 3 países del programa Erasmus+. El primer socio se marca automáticamente como Applicant.</div>
+
+      <div id="partnersList"></div>
+
+      <button class="array-add" onclick="addPartner()">
+        + Añadir socio
+      </button>
+      <div class="consortium-count" id="consortiumCount"></div>
+    </div>
+
+    <div class="step-actions">
+      <button class="btn btn--secondary" onclick="goToStep(0)">← Atrás</button>
+      <button class="btn btn--primary" onclick="validateStep1()">
+        Siguiente: Contexto →
+      </button>
+    </div>
+  </section>
+
+  <!-- ─── PASO 3: CONTEXTO ─── -->
+  <section class="step-panel" id="panel-2">
+    <h1 class="page-title">Contexto del proyecto</h1>
+    <p class="page-sub">Describe el problema que aborda el proyecto, los grupos destinatarios y el enfoque propuesto. Estos textos informan la narrativa de la solicitud.</p>
+
+    <!-- Problema / Necesidad -->
+    <div class="card card--accent">
+      <div class="card__title">🎯 Problema / Necesidad</div>
+      <div class="card__subtitle">¿Qué problema o necesidad justifica este proyecto? Incluye evidencias, datos o contexto europeo relevante.</div>
+      <div class="field">
+        <label for="ctx_problem">Descripción del problema <span class="req">*</span></label>
+        <textarea id="ctx_problem" rows="8"
+                  placeholder="Describe el problema o necesidad que el proyecto pretende abordar. Aporta datos, estudios o informes que justifiquen la relevancia a nivel europeo o transnacional..."
+                  oninput="updateWordCounter(this, 'wc_problem', 200, 500); state.ctx_problem = this.value; autoSave()"></textarea>
+        <div class="word-counter empty" id="wc_problem">
+          <div class="word-counter__bar"><div class="word-counter__fill" id="wc_problem_fill" style="width:0%"></div></div>
+          <span class="word-counter__text">0 palabras · objetivo: 200–500</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grupos destinatarios -->
+    <div class="card card--gold">
+      <div class="card__title">👥 Grupos destinatarios</div>
+      <div class="card__subtitle">¿A quién va dirigido el proyecto? Especifica los beneficiarios directos e indirectos.</div>
+      <div class="field">
+        <label for="ctx_targets">Beneficiarios y grupos destinatarios <span class="req">*</span></label>
+        <textarea id="ctx_targets" rows="6"
+                  placeholder="Identifica los grupos destinatarios directos (jóvenes, trabajadores de juventud, responsables de políticas...) e indirectos. Indica características, contexto y por qué son relevantes para este proyecto..."
+                  oninput="updateWordCounter(this, 'wc_targets', 150, 400); state.ctx_targets = this.value; autoSave()"></textarea>
+        <div class="word-counter empty" id="wc_targets">
+          <div class="word-counter__bar"><div class="word-counter__fill" id="wc_targets_fill" style="width:0%"></div></div>
+          <span class="word-counter__text">0 palabras · objetivo: 150–400</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enfoque y propuesta de valor -->
+    <div class="card card--info">
+      <div class="card__title">💡 Enfoque y propuesta de valor</div>
+      <div class="card__subtitle">¿Cómo aborda el proyecto el problema? ¿Qué hace diferente o innovador este enfoque?</div>
+      <div class="field">
+        <label for="ctx_approach">Descripción del enfoque <span class="req">*</span></label>
+        <textarea id="ctx_approach" rows="8"
+                  placeholder="Explica la metodología, el enfoque o la propuesta de valor. ¿Qué resultados se esperan? ¿Qué impacto tendrá a nivel político, práctico o sistémico? ¿Por qué este consorcio es el idóneo para llevarlo a cabo?..."
+                  oninput="updateWordCounter(this, 'wc_approach', 200, 500); state.ctx_approach = this.value; autoSave()"></textarea>
+        <div class="word-counter empty" id="wc_approach">
+          <div class="word-counter__bar"><div class="word-counter__fill" id="wc_approach_fill" style="width:0%"></div></div>
+          <span class="word-counter__text">0 palabras · objetivo: 200–500</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-actions">
+      <button class="btn btn--secondary" onclick="goToStep(1)">← Atrás</button>
+      <button class="btn btn--primary" onclick="validateStep2()">
+        Finalizar y exportar →
+      </button>
+    </div>
+  </section>
+
+  <!-- ─── PASO 4: EXPORTAR ─── -->
+  <section class="step-panel" id="panel-3">
+    <div class="completion-banner">
+      <div class="completion-banner__icon">🎉</div>
+      <h1 class="completion-banner__title">¡Intake completado!</h1>
+      <p class="completion-banner__sub">
+        El intake del proyecto <strong id="exportProjName">—</strong> está listo.
+        Exporta el JSON para cargarlo en la Calculadora Presupuestaria o guárdalo para continuar más tarde.
+      </p>
+      <div class="export-actions">
+        <button class="btn btn--gold" onclick="exportJSON()">↓ Descargar JSON</button>
+        <button class="btn btn--primary" onclick="copyJSON()">📋 Copiar JSON</button>
+        <button class="btn btn--secondary" onclick="goToStep(0)">← Revisar</button>
+      </div>
+    </div>
+
+    <div class="card card--accent">
+      <div class="card__title">📄 Vista previa del JSON</div>
+      <div class="card__subtitle">Estructura compatible con la Calculadora Presupuestaria (wizard.html). Los campos <code>fields</code> y <code>state.partners</code> se importan directamente.</div>
+      <div class="export-panel">
+        <pre id="jsonPreview">{ }</pre>
+      </div>
+    </div>
+
+    <!-- Summary chips -->
+    <div class="card">
+      <div class="section-label">Resumen del intake</div>
+      <div class="info-grid" id="summaryGrid"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+     ══════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ── STATE ── */
+const STORAGE_KEY = 'erasmus-intake-v1';
+
+const PROGRAMMES = {
+  'ka3-youth-2026': {
+    name:        'KA3 Policy Support — Erasmus+ Youth 2026',
+    deadline:    '15/03/2026',
+    deadline_iso:'2026-03-15',
+    start_min:   '2026-09-01',
+    start_max:   '2027-03-01',
+    duration_min: 12,
+    duration_max: 24,
+    eu_grant:    500000,
+    cofin_pct:   80,
+    indirect_pct:7,
+    action:      'KA3',
+    sector:      'Youth',
+  }
+};
+
+let state = {
+  programme:     null,
+  proj_start:    '',
+  proj_duration: 24,
+  proj_name:     '',
+  proj_acronym:  '',
+  proj_topic:    '',
+  partners:      [],
+  ctx_problem:   '',
+  ctx_targets:   '',
+  ctx_approach:  '',
+  maxReached:    0,
+};
+
+/* ── STEP NAVIGATION ── */
+function goToStep(i) {
+  if (i > state.maxReached) return;
+
+  document.querySelectorAll('.step-panel').forEach((p, j) => {
+    p.classList.toggle('active', j === i);
+  });
+  document.querySelectorAll('.step-tab').forEach((t, j) => {
+    t.classList.remove('active', 'completed', 'locked');
+    if (j === i)                   t.classList.add('active');
+    else if (j < state.maxReached) t.classList.add('completed');
+    else if (j > state.maxReached) t.classList.add('locked');
+  });
+
+  updateProgress(i);
+
+  if (i === 3) buildExportPanel();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function unlock(max) {
+  state.maxReached = max;
+  document.querySelectorAll('.step-tab').forEach((t, j) => {
+    if (j <= max) t.classList.remove('locked');
+  });
+}
+
+function updateProgress(step) {
+  const pct = Math.round(((step + 1) / 4) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+/* ── PROGRAMME SELECTION ── */
+function selectProgramme(id) {
+  const p = PROGRAMMES[id];
+  if (!p) return;
+
+  state.programme = id;
+  document.getElementById('radio-ka3-2026').checked = true;
+
+  document.querySelectorAll('.programme-option').forEach(el => el.classList.remove('selected'));
+  document.getElementById('opt-ka3-2026').classList.add('selected');
+
+  // Show autocomplete panel
+  const panel = document.getElementById('autocompletePanel');
+  panel.classList.add('visible');
+  document.getElementById('autoParamsGrid').innerHTML = `
+    <div class="info-chip">
+      <div class="info-chip__label">Deadline</div>
+      <div class="info-chip__value">${p.deadline}</div>
+    </div>
+    <div class="info-chip">
+      <div class="info-chip__label">Inicio válido</div>
+      <div class="info-chip__value">${formatDate(p.start_min)} – ${formatDate(p.start_max)}</div>
+    </div>
+    <div class="info-chip">
+      <div class="info-chip__label">Duración</div>
+      <div class="info-chip__value">${p.duration_min}–${p.duration_max} meses</div>
+    </div>
+    <div class="info-chip">
+      <div class="info-chip__label">Subvención UE</div>
+      <div class="info-chip__value gold">Máx. ${formatEur(p.eu_grant)}</div>
+    </div>
+    <div class="info-chip">
+      <div class="info-chip__label">Cofinanciación</div>
+      <div class="info-chip__value">${p.cofin_pct}%</div>
+    </div>
+    <div class="info-chip">
+      <div class="info-chip__label">Costes indirectos</div>
+      <div class="info-chip__value">${p.indirect_pct}%</div>
+    </div>
+  `;
+
+  // Show start date card
+  document.getElementById('startDateCard').style.display = 'block';
+  const startInput = document.getElementById('proj_start');
+  startInput.min = p.start_min;
+  startInput.max = p.start_max;
+  if (!state.proj_start) {
+    startInput.value = p.start_min;
+    state.proj_start = p.start_min;
+  }
+
+  autoSave();
+}
+
+/* ── STEP VALIDATION ── */
+function validateStep0() {
+  if (!state.programme) {
+    showToast('Selecciona una convocatoria para continuar.', 'error');
+    return;
+  }
+  if (!state.proj_start) {
+    showToast('Indica la fecha de inicio del proyecto.', 'error');
+    return;
+  }
+  const dur = parseInt(document.getElementById('proj_duration').value);
+  const prog = PROGRAMMES[state.programme];
+  if (!dur || dur < prog.duration_min || dur > prog.duration_max) {
+    showToast(`La duración debe estar entre ${prog.duration_min} y ${prog.duration_max} meses.`, 'error');
+    return;
+  }
+  state.proj_duration = dur;
+  if (state.maxReached < 1) unlock(1);
+  goToStep(1);
+  autoSave();
+}
+
+function validateStep1() {
+  if (!state.proj_name.trim()) {
+    showToast('Introduce el nombre del proyecto.', 'error');
+    return;
+  }
+  if (!state.proj_acronym.trim()) {
+    showToast('Introduce el acrónimo del proyecto.', 'error');
+    return;
+  }
+  if (state.partners.length < 1) {
+    showToast('Añade al menos el applicant al consorcio.', 'error');
+    return;
+  }
+  const countries = [...new Set(state.partners.map(p => p.country.trim()).filter(Boolean))];
+  if (countries.length < 3) {
+    showToast('El consorcio debe incluir al menos 3 países distintos.', 'error');
+    return;
+  }
+  if (state.maxReached < 2) unlock(2);
+  goToStep(2);
+  autoSave();
+}
+
+function validateStep2() {
+  const wProblem  = countWords(state.ctx_problem);
+  const wTargets  = countWords(state.ctx_targets);
+  const wApproach = countWords(state.ctx_approach);
+  const issues = [];
+  if (wProblem < 200)  issues.push(`Problema/Necesidad: mínimo 200 palabras (tienes ${wProblem})`);
+  if (wTargets < 150)  issues.push(`Grupos destinatarios: mínimo 150 palabras (tienes ${wTargets})`);
+  if (wApproach < 200) issues.push(`Enfoque: mínimo 200 palabras (tienes ${wApproach})`);
+  if (issues.length) {
+    showToast(issues[0], 'error');
+    return;
+  }
+  if (state.maxReached < 3) unlock(3);
+  goToStep(3);
+  autoSave();
+}
+
+/* ── CONSORTIUM ── */
+function addPartner() {
+  const idx = state.partners.length;
+  state.partners.push({ name: '', city: '', country: '', role: idx === 0 ? 'applicant' : 'partner' });
+  renderPartners();
+  autoSave();
+}
+
+function removePartner(idx) {
+  if (state.partners.length === 1) {
+    showToast('El consorcio debe tener al menos 1 socio.', 'error');
+    return;
+  }
+  state.partners.splice(idx, 1);
+  // Re-assign first as applicant
+  if (state.partners.length > 0) state.partners[0].role = 'applicant';
+  renderPartners();
+  autoSave();
+}
+
+function renderPartners() {
+  const container = document.getElementById('partnersList');
+  if (!container) return;
+
+  container.innerHTML = state.partners.map((p, i) => {
+    const isApplicant = i === 0;
+    return `
+    <div class="partner-item ${isApplicant ? 'partner-item--applicant' : ''}">
+      <div class="partner-item__header">
+        <div class="partner-item__title">
+          ${isApplicant
+            ? `<span class="badge-applicant">Applicant</span>`
+            : `<span class="badge-partner">Socio ${i}</span>`}
+          <span style="color:var(--text-secondary);font-size:.88rem">${p.name || 'Nueva organización'}</span>
+        </div>
+        ${!isApplicant ? `<button class="btn btn--danger btn--sm" onclick="removePartner(${i})">✕ Eliminar</button>` : ''}
+      </div>
+      <div class="form-grid form-grid--3" style="gap:12px">
+        <div class="field full" style="grid-column:1/-1">
+          <label>Nombre de la entidad <span class="req">*</span></label>
+          <input type="text" value="${escHtml(p.name)}" placeholder="Nombre de la organización"
+                 oninput="state.partners[${i}].name=this.value; updatePartnerTitle(${i},this.value); autoSave()">
+        </div>
+        <div class="field">
+          <label>Ciudad</label>
+          <input type="text" value="${escHtml(p.city)}" placeholder="Madrid, Paris…"
+                 oninput="state.partners[${i}].city=this.value; autoSave()">
+        </div>
+        <div class="field">
+          <label>País <span class="req">*</span></label>
+          <input type="text" value="${escHtml(p.country)}" placeholder="España, Francia…"
+                 oninput="state.partners[${i}].country=this.value; autoSave(); updateConsortiumCount()">
+        </div>
+        <div class="field">
+          <label>Rol en el proyecto</label>
+          <input type="text" value="${escHtml(isApplicant ? 'Applicant / Coordinador' : (p.role_label || 'Socio'))}"
+                 placeholder="Coordinador, experto…"
+                 oninput="state.partners[${i}].role_label=this.value; autoSave()"
+                 ${isApplicant ? 'readonly' : ''}>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  updateConsortiumCount();
+}
+
+function updatePartnerTitle(idx, name) {
+  // Live update header title without re-render
+  const items = document.querySelectorAll('.partner-item');
+  if (items[idx]) {
+    const span = items[idx].querySelector('.partner-item__title span[style]');
+    if (span) span.textContent = name || 'Nueva organización';
+  }
+}
+
+function updateConsortiumCount() {
+  const el = document.getElementById('consortiumCount');
+  if (!el) return;
+  const countries = [...new Set(state.partners.map(p => p.country.trim()).filter(Boolean))];
+  const n = state.partners.length;
+  const c = countries.length;
+  const ok = c >= 3;
+  el.innerHTML = `${n} organización${n !== 1 ? 'es' : ''} · ${c} país${c !== 1 ? 'es' : ''}
+    ${ok
+      ? '<span style="color:var(--success);margin-left:6px">✓ mínimo cumplido</span>'
+      : '<span style="color:var(--warning);margin-left:6px">⚠ se requieren al menos 3 países</span>'}`;
+}
+
+/* ── WORD COUNTER ── */
+function countWords(text) {
+  return (text || '').trim().split(/\s+/).filter(Boolean).length;
+}
+
+function updateWordCounter(textarea, counterId, min, max) {
+  const words = countWords(textarea.value);
+  const el    = document.getElementById(counterId);
+  const fill  = document.getElementById(counterId + '_fill');
+  if (!el || !fill) return;
+
+  const pct = Math.min(100, Math.round((words / max) * 100));
+  fill.style.width = pct + '%';
+
+  el.className = 'word-counter';
+  let status = '';
+  if (words === 0) {
+    el.classList.add('empty');
+    status = '0 palabras';
+  } else if (words < min) {
+    el.classList.add('short');
+    status = `${words} palabras · faltan ${min - words} para el mínimo`;
+  } else if (words <= max) {
+    el.classList.add('good');
+    status = `${words} palabras ✓`;
+  } else {
+    el.classList.add('long');
+    status = `${words} palabras — ${words - max} sobre el máximo`;
+  }
+
+  el.querySelector('.word-counter__text').textContent = status + ` · objetivo: ${min}–${max}`;
+}
+
+/* ── EXPORT ── */
+function buildSnapshot() {
+  const prog = state.programme ? PROGRAMMES[state.programme] : {};
+  return {
+    version:  '1.0',
+    module:   'M0-intake',
+    savedAt:  new Date().toISOString(),
+    meta: {
+      programme:   prog.name || '',
+      action:      prog.action || '',
+      sector:      prog.sector || '',
+      deadline:    prog.deadline_iso || '',
+    },
+    fields: {
+      proj_name:    state.proj_name,
+      proj_acronym: state.proj_acronym,
+      proj_topic:   state.proj_topic,
+      proj_type:    prog.action || '',
+      proj_start:   state.proj_start,
+      months:       String(state.proj_duration || 24),
+      eu_grant:     String(prog.eu_grant || ''),
+      cofin_pct:    String(prog.cofin_pct || '80'),
+      indirect_pct: String(prog.indirect_pct || '7'),
+      n_partners:   String(state.partners.length),
+      n_wps:        '4',
+    },
+    state: {
+      partners: state.partners.map((p, i) => ({
+        id:      i + 1,
+        name:    p.name,
+        city:    p.city,
+        country: p.country,
+        role:    i === 0 ? 'applicant' : (p.role_label || 'partner'),
+      })),
+    },
+    intake: {
+      problem:      state.ctx_problem,
+      target_groups:state.ctx_targets,
+      approach:     state.ctx_approach,
+      word_counts: {
+        problem:       countWords(state.ctx_problem),
+        target_groups: countWords(state.ctx_targets),
+        approach:      countWords(state.ctx_approach),
+      },
+    },
+  };
+}
+
+function exportJSON() {
+  const snap = buildSnapshot();
+  const slug = (state.proj_acronym || state.proj_name || 'intake')
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const blob = new Blob([JSON.stringify(snap, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${slug}-intake.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('JSON exportado correctamente', 'success');
+}
+
+function copyJSON() {
+  const snap = buildSnapshot();
+  const text = JSON.stringify(snap, null, 2);
+  navigator.clipboard.writeText(text)
+    .then(() => showToast('JSON copiado al portapapeles', 'success'))
+    .catch(() => showToast('No se pudo copiar. Usa el botón de descarga.', 'error'));
+}
+
+function buildExportPanel() {
+  const snap = buildSnapshot();
+  document.getElementById('jsonPreview').textContent = JSON.stringify(snap, null, 2);
+  document.getElementById('exportProjName').textContent =
+    state.proj_acronym ? `${state.proj_name} (${state.proj_acronym})` : (state.proj_name || '—');
+
+  const prog = state.programme ? PROGRAMMES[state.programme] : {};
+  const countries = [...new Set(state.partners.map(p => p.country.trim()).filter(Boolean))];
+  document.getElementById('summaryGrid').innerHTML = `
+    <div class="info-chip">
+      <div class="info-chip__label">Convocatoria</div>
+      <div class="info-chip__value" style="font-size:.8rem">${prog.name || '—'}</div>
+    </div>
+    <div class="info-chip">
+      <div class="info-chip__label">Socios</div>
+      <div class="info-chip__value">${state.partners.length} org · ${countries.length} países</div>
+    </div>
+    <div class="info-chip">
+      <div class="info-chip__label">Inicio</div>
+      <div class="info-chip__value">${state.proj_start ? formatDate(state.proj_start) : '—'}</div>
+    </div>
+    <div class="info-chip">
+      <div class="info-chip__label">Duración</div>
+      <div class="info-chip__value">${state.proj_duration} meses</div>
+    </div>
+    <div class="info-chip">
+      <div class="info-chip__label">Subvención max.</div>
+      <div class="info-chip__value gold">${prog.eu_grant ? formatEur(prog.eu_grant) : '—'}</div>
+    </div>
+    <div class="info-chip">
+      <div class="info-chip__label">Palabras contexto</div>
+      <div class="info-chip__value">${countWords(state.ctx_problem) + countWords(state.ctx_targets) + countWords(state.ctx_approach)}</div>
+    </div>
+  `;
+}
+
+/* ── SAVE / LOAD ── */
+let autoSaveTimer = null;
+function autoSave() {
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(saveToStorage, 800);
+}
+
+function saveToStorage() {
+  try {
+    const data = {
+      version: '1.0',
+      savedAt: new Date().toISOString(),
+      state:   state,
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    showToast('Progreso guardado', 'success');
+  } catch(e) {
+    showToast('No se pudo guardar el progreso.', 'error');
+  }
+}
+
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (data.state) applyState(data.state);
+  } catch(e) { /* ignore */ }
+}
+
+function loadFromFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      // Support both direct state dump and full intake export
+      const s = data.state && data.state.partners !== undefined
+        ? { ...data.state, ...{
+            programme:     data.state.programme,
+            proj_start:    data.fields?.proj_start    || data.state.proj_start,
+            proj_duration: parseInt(data.fields?.months) || data.state.proj_duration || 24,
+            proj_name:     data.fields?.proj_name     || data.state.proj_name,
+            proj_acronym:  data.fields?.proj_acronym  || data.state.proj_acronym,
+            proj_topic:    data.fields?.proj_topic    || data.state.proj_topic,
+            ctx_problem:   data.intake?.problem       || data.state.ctx_problem,
+            ctx_targets:   data.intake?.target_groups || data.state.ctx_targets,
+            ctx_approach:  data.intake?.approach      || data.state.ctx_approach,
+          }}
+        : null;
+      if (s) {
+        applyState(s);
+        showToast('Intake cargado correctamente.', 'success');
+      } else {
+        showToast('Formato de archivo no reconocido.', 'error');
+      }
+    } catch(err) {
+      showToast('Error al leer el archivo JSON.', 'error');
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function applyState(s) {
+  Object.assign(state, s);
+
+  // Restore programme selection
+  if (state.programme) selectProgramme(state.programme);
+
+  // Restore form fields
+  setVal('proj_start',    state.proj_start);
+  setVal('proj_duration', state.proj_duration);
+  setVal('proj_name',     state.proj_name);
+  setVal('proj_acronym',  state.proj_acronym);
+  setVal('proj_topic',    state.proj_topic);
+  setVal('ctx_problem',   state.ctx_problem);
+  setVal('ctx_targets',   state.ctx_targets);
+  setVal('ctx_approach',  state.ctx_approach);
+
+  // Re-trigger word counters
+  const problem  = document.getElementById('ctx_problem');
+  const targets  = document.getElementById('ctx_targets');
+  const approach = document.getElementById('ctx_approach');
+  if (problem && state.ctx_problem)  updateWordCounter(problem,  'wc_problem',  200, 500);
+  if (targets && state.ctx_targets)  updateWordCounter(targets,  'wc_targets',  150, 400);
+  if (approach && state.ctx_approach) updateWordCounter(approach, 'wc_approach', 200, 500);
+
+  // Partners
+  if (!state.partners || state.partners.length === 0) state.partners = [];
+  renderPartners();
+
+  // Navigate to max reached step
+  if (state.maxReached > 0) {
+    unlock(state.maxReached);
+    goToStep(Math.min(state.maxReached, 3));
+  }
+}
+
+/* ── UTILITIES ── */
+function setVal(id, val) {
+  const el = document.getElementById(id);
+  if (el && val !== undefined && val !== null) el.value = val;
+}
+
+function formatDate(iso) {
+  if (!iso) return '—';
+  const [y, m, d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function formatEur(n) {
+  return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n);
+}
+
+function escHtml(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let toastTimer = null;
+function showToast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast' + (type ? ' toast--' + type : '') + ' visible';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('visible'), 2800);
+}
+
+/* ── INIT ── */
+(function init() {
+  // Bootstrap with one applicant slot
+  if (state.partners.length === 0) {
+    state.partners.push({ name: '', city: '', country: '', role: 'applicant' });
+  }
+  renderPartners();
+  loadFromStorage();
+})();
+</script>
+</body>
+</html>
