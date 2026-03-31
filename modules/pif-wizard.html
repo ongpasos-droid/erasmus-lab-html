@@ -268,6 +268,20 @@ body {
 .word-counter.good   { color: var(--success); }
 .word-counter.long   { color: var(--danger); }
 
+/* Required field validation */
+.field input.field-error,
+.field select.field-error,
+.field textarea.field-error {
+  border-color: var(--danger) !important;
+  box-shadow: 0 0 0 3px rgba(192,57,43,0.12) !important;
+}
+.field-error-msg {
+  font-size: .72rem;
+  color: var(--danger);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
 /* ══════════════════════════════════════
    BUTTONS
    ══════════════════════════════════════ */
@@ -1186,6 +1200,7 @@ function createEmptyState() {
 // ─── INIT ───
 document.addEventListener('DOMContentLoaded', () => {
   populateCountrySelect();
+  setupCountryDropdown();
   renderStepNav();
   loadFromLocal();
   goStep(0);
@@ -1230,7 +1245,7 @@ function filterCountries(query) {
       lastGroup = c.group;
       html += `<div class="country-dropdown__group">${esc(c.group)}</div>`;
     }
-    html += `<div class="country-dropdown__item" onmousedown="selectCountry('${esc(c.name)}')">${esc(c.name)}</div>`;
+    html += `<div class="country-dropdown__item" data-country="${esc(c.name)}">${esc(c.name)}</div>`;
   });
 
   dd.innerHTML = html;
@@ -1251,6 +1266,37 @@ function closeCountryDropdown() {
   if (dd) dd.classList.remove('open');
 }
 
+function setupCountryDropdown() {
+  const dd = document.getElementById('countryDropdown');
+  if (!dd) return;
+  let _cdScrolling = false;
+
+  dd.addEventListener('mousedown', function(e) {
+    const item = e.target.closest('.country-dropdown__item');
+    if (item && item.dataset.country) {
+      e.preventDefault(); // prevent input blur before selection
+      selectCountry(item.dataset.country);
+    }
+  });
+
+  dd.addEventListener('touchstart', function() {
+    _cdScrolling = false;
+  }, { passive: true });
+
+  dd.addEventListener('touchmove', function() {
+    _cdScrolling = true;
+  }, { passive: true });
+
+  dd.addEventListener('touchend', function(e) {
+    if (_cdScrolling) return;
+    const item = e.target.closest('.country-dropdown__item');
+    if (item && item.dataset.country) {
+      e.preventDefault();
+      selectCountry(item.dataset.country);
+    }
+  });
+}
+
 // ─── STEP NAVIGATION ───
 function renderStepNav() {
   const nav = document.getElementById('stepNav');
@@ -1263,6 +1309,7 @@ function renderStepNav() {
 }
 
 function goStep(n) {
+  if (currentStep === 1 && n !== 1) validateStep1();
   collectFields(); // save current before leaving
   currentStep = n;
 
@@ -1303,6 +1350,49 @@ function bindFieldListeners() {
       textarea.addEventListener('input', () => updateWordCounter(textarea, el, field));
     }
   });
+
+  // Clear validation errors on input for required fields
+  ['countryInput', '[data-field="organisation_name"]', '[data-field="acronym"]', '[data-field="city"]'].forEach(sel => {
+    const el = sel.startsWith('[') ? document.querySelector(sel) : document.getElementById(sel);
+    if (el) el.addEventListener('input', function() {
+      this.classList.remove('field-error');
+      const msg = this.parentNode.querySelector('.field-error-msg');
+      if (msg) msg.remove();
+    });
+  });
+}
+
+// ─── REQUIRED FIELD VALIDATION ───
+function clearFieldErrors() {
+  document.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
+  document.querySelectorAll('.field-error-msg').forEach(el => el.remove());
+}
+
+function validateStep1() {
+  clearFieldErrors();
+  collectFields();
+  const checks = [
+    { id: 'countryInput',                           label: 'País' },
+    { selector: '[data-field="organisation_name"]', label: 'Nombre de la organización' },
+    { selector: '[data-field="acronym"]',           label: 'Acrónimo' },
+    { selector: '[data-field="city"]',              label: 'Ciudad' }
+  ];
+  const missing = [];
+  checks.forEach(({ id, selector, label }) => {
+    const el = id ? document.getElementById(id) : document.querySelector(selector);
+    if (el && !el.value.trim()) {
+      el.classList.add('field-error');
+      const msg = document.createElement('div');
+      msg.className = 'field-error-msg';
+      msg.textContent = label + ' es obligatorio';
+      el.parentNode.insertBefore(msg, el.nextSibling);
+      missing.push(label);
+    }
+  });
+  if (missing.length > 0) {
+    showToast('⚠ Campos obligatorios vacíos: ' + missing.join(', '));
+  }
+  return missing.length === 0;
 }
 
 function updateWordCounter(textarea, counterEl, field) {
@@ -1401,7 +1491,7 @@ function renderContacts() {
       <div class="form-grid">
         <div class="field">
           <label>Nombre completo <span class="req">*</span></label>
-          <input type="text" value="${esc(c.name)}" onchange="state.contacts[${i}].name=this.value;renderContacts()">
+          <input type="text" value="${esc(c.name)}" oninput="updateContactName(${i}, this.value)">
         </div>
         <div class="field">
           <label>Título / Tratamiento</label>
@@ -1477,7 +1567,7 @@ function renderStaff() {
       <div class="form-grid">
         <div class="field">
           <label>Nombre completo <span class="req">*</span></label>
-          <input type="text" value="${esc(s.name)}" onchange="state.key_staff[${i}].name=this.value;renderStaff()">
+          <input type="text" value="${esc(s.name)}" oninput="updateStaffName(${i}, this.value)">
         </div>
         <div class="field">
           <label>Rol en el proyecto</label>
@@ -1560,7 +1650,7 @@ function renderProjects() {
         </div>
         <div class="field" style="grid-column: span 2;">
           <label>Título del proyecto</label>
-          <input type="text" value="${esc(p.title)}" onchange="state.previous_projects[${i}].title=this.value;renderProjects()" placeholder="Título completo">
+          <input type="text" value="${esc(p.title)}" oninput="updateProjectTitle(${i}, this.value)" placeholder="Título completo">
         </div>
       </div>
     </div>
@@ -1651,6 +1741,34 @@ function renderEntities() {
       </div>
     </div>
   `).join('');
+}
+
+// ─── HEADER TITLE UPDATES (avoids full list rerender) ───
+function updateContactName(idx, value) {
+  state.contacts[idx].name = value;
+  const items = document.querySelectorAll('#contactsList .array-item');
+  if (items[idx]) {
+    const t = items[idx].querySelector('.array-item__title');
+    if (t) t.textContent = value || 'Contacto ' + (idx + 1);
+  }
+}
+
+function updateStaffName(idx, value) {
+  state.key_staff[idx].name = value;
+  const items = document.querySelectorAll('#staffList .array-item');
+  if (items[idx]) {
+    const t = items[idx].querySelector('.array-item__title');
+    if (t) t.textContent = value || 'Persona ' + (idx + 1);
+  }
+}
+
+function updateProjectTitle(idx, value) {
+  state.previous_projects[idx].title = value;
+  const items = document.querySelectorAll('#projectsList .array-item');
+  if (items[idx]) {
+    const t = items[idx].querySelector('.array-item__title');
+    if (t) t.textContent = value || state.previous_projects[idx].code || 'Proyecto ' + (idx + 1);
+  }
 }
 
 // ═══════════════════════════════════════
@@ -1752,16 +1870,22 @@ function importJSON(event) {
       if (data.partner && typeof data.partner === 'object') {
         // Standard PIF export format
         Object.keys(data.partner).forEach(k => {
-          if (k in state) state[k] = data.partner[k];
+          if (k in state && !Array.isArray(state[k])) state[k] = data.partner[k];
         });
-        if (data.contacts) state.contacts = data.contacts;
-        if (data.key_staff) state.key_staff = data.key_staff;
-        if (data.previous_projects) state.previous_projects = data.previous_projects;
-        if (data.associated_partners) state.associated_partners = data.associated_partners;
+        if (Array.isArray(data.contacts)) state.contacts = data.contacts;
+        if (Array.isArray(data.key_staff)) state.key_staff = data.key_staff;
+        if (Array.isArray(data.previous_projects)) state.previous_projects = data.previous_projects;
+        if (Array.isArray(data.associated_partners)) state.associated_partners = data.associated_partners;
       } else {
         // Flat format (direct state dump)
         Object.keys(data).forEach(k => {
-          if (k in state) state[k] = data[k];
+          if (k in state) {
+            if (Array.isArray(state[k])) {
+              if (Array.isArray(data[k])) state[k] = data[k];
+            } else {
+              state[k] = data[k];
+            }
+          }
         });
       }
 
@@ -1808,7 +1932,13 @@ function loadFromLocal() {
     if (saved) {
       const data = JSON.parse(saved);
       Object.keys(data).forEach(k => {
-        if (k in state) state[k] = data[k];
+        if (k in state) {
+          if (Array.isArray(state[k])) {
+            if (Array.isArray(data[k])) state[k] = data[k];
+          } else {
+            state[k] = data[k];
+          }
+        }
       });
       rebuildIdCounters();
       populateFields();
@@ -1829,7 +1959,7 @@ function showToast(msg) {
 // ─── HTML ESCAPE UTILITY ───
 function esc(str) {
   if (!str) return '';
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 // ═══════════════════════════════════════════════════════════════
