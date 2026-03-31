@@ -1,0 +1,17 @@
+Todo correcto. Resumen de los cambios realizados:
+
+**`buildExportJSON()`**
+- `meta.schema_version: '1.0'` añadido
+- Nuevo bloque `ecosystem: { tool, version, compatible_with: ['intake','calculator','planner'] }`
+- Nuevo bloque `completeness: { partner_fields_filled, partner_fields_total: 29, array_items_total }` — cuenta campos escalares rellenos vs total, más items en arrays
+
+**`exportJSON()`**
+- Valida 5 campos obligatorios (`country`, `organisation_name`, `acronym`, `organisation_type`, `organisation_email`) antes de exportar
+- Si faltan, muestra `showToast("⚠ Campos obligatorios vacíos: ...")` pero continúa la exportación
+- Nombre de archivo: `ACRONYM_PIF_YYYY-MM-DD.json` (mayúsculas, caracteres especiales eliminados)
+
+**`refreshPreview()` + `syntaxHighlight()`**
+- Nueva función `syntaxHighlight(json)` que usa regex para envolver claves (`.jk` → azul), strings (`.js` → verde), números (`.jn` → amarillo), booleans (`.jb` → rosa), null (`.jx` → gris) en `<span>`
+- Escapa `&`, `<`, `>` antes de aplicar el highlighting
+- Preview usa `innerHTML` en lugar de `textContent`
+- 5 clases CSS añadidas sobre `.json-preview`
