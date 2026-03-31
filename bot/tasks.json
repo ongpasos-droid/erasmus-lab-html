@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "version": "1.0",
+    "project": "eu-funding-school",
+    "created_at": "2026-03-31",
+    "description": "Tareas nocturnas para el bot de Claude Code"
+  },
+  "config": {
+    "repo": "ongpasos-droid/erasmus-lab-html",
+    "base_branch": "main",
+    "max_tasks_per_run": 5,
+    "pause_between_tasks_seconds": 30,
+    "working_dir": "/home/claudebot/erasmus-lab-html"
+  },
+  "tasks": [
+    {
+      "id": "task-001",
+      "priority": 1,
+      "status": "pending",
+      "branch": "bot/debug-pif-wizard",
+      "title": "Debug y pulir PIF Wizard",
+      "prompt": "Revisa el archivo modules/pif-wizard.html completo. Haz lo siguiente:\n1. Abre el archivo y analiza todo el código JS buscando bugs potenciales.\n2. Verifica que el localStorage funciona correctamente (guardar/cargar).\n3. Verifica que la exportación JSON genera un JSON válido y completo.\n4. Verifica que la importación JSON reconstruye correctamente todos los arrays dinámicos (contactos, staff, proyectos, entidades).\n5. Mejora la validación de campos obligatorios (country, organisation_name, acronym, city) mostrando feedback visual.\n6. Asegúrate de que el selector de países con autocompletado funcione bien en móvil.\n7. Haz commit de todos los cambios con mensaje descriptivo.\nNO cambies el diseño visual ni la estructura de pasos. Solo correcciones y mejoras de robustez.",
+      "files": ["modules/pif-wizard.html"],
+      "estimated_minutes": 15
+    },
+    {
+      "id": "task-002",
+      "priority": 2,
+      "status": "pending",
+      "branch": "bot/responsive-pif",
+      "title": "Mejorar responsividad mobile del PIF Wizard",
+      "prompt": "Revisa modules/pif-wizard.html y mejora la experiencia en móvil:\n1. Testea mentalmente cada paso del wizard en viewport de 375px.\n2. Mejora el step-nav para que sea scrollable horizontalmente con indicadores.\n3. Asegúrate de que los form-grid colapsen correctamente a 1 columna.\n4. Los array-item (contactos, staff, etc.) deben verse bien en móvil.\n5. Los botones de acción deben ser suficientemente grandes para touch (min 44px).\n6. El dropdown de países debe funcionar bien en móvil.\n7. El modal de pegar texto debe adaptarse a pantalla pequeña.\nMantén la paleta de colores y tipografías actuales. Solo CSS responsive.",
+      "files": ["modules/pif-wizard.html"],
+      "estimated_minutes": 12
+    },
+    {
+      "id": "task-003",
+      "priority": 3,
+      "status": "pending",
+      "branch": "bot/unify-ecosystem-app",
+      "title": "Crear app unificada del ecosistema con navegación entre módulos",
+      "prompt": "Crea un nuevo archivo llamado 'modules/ecosystem-hub.html' que sirva como punto de entrada unificado del ecosistema EU Funding School. Debe:\n1. Tener un dashboard principal que muestre los módulos disponibles como cards (Intake, PIF Wizard, Calculator, Planner, etc.).\n2. Cada card muestra: icono, nombre del módulo, descripción corta, estado (disponible/próximamente).\n3. Los módulos disponibles (PIF Wizard por ahora) se abren en la misma ventana.\n4. Usa la misma paleta visual: fondo cálido #f5f3ef, verde oscuro #1a3a2a como primario, tipografías Syne + DM Sans + DM Mono.\n5. Incluye una barra lateral o superior con el nombre del ecosistema.\n6. Todo en un solo archivo HTML autocontenido.\n7. Prepáralo para que los módulos compartan datos vía localStorage con un namespace común 'efs_' (EU Funding School).\nEste es el esqueleto del hub, no necesita funcionalidad compleja aún.",
+      "files": ["modules/ecosystem-hub.html"],
+      "estimated_minutes": 20
+    },
+    {
+      "id": "task-004",
+      "priority": 4,
+      "status": "pending",
+      "branch": "bot/improve-json-export",
+      "title": "Mejorar compatibilidad del JSON exportado con el ecosistema",
+      "prompt": "Revisa la función buildExportJSON() en modules/pif-wizard.html y mejórala:\n1. Añade al bloque 'meta' un campo 'schema_version' con valor '1.0'.\n2. Añade un bloque 'ecosystem' con: { tool: 'pif-wizard', version: '1.0', compatible_with: ['intake', 'calculator', 'planner'] }.\n3. El JSON exportado debe incluir un resumen de completitud: cuántos campos están rellenos vs total.\n4. Añade validación antes de exportar: si faltan campos obligatorios, muestra un warning (pero permite exportar).\n5. Mejora el nombre del archivo: usa formato 'ACRONYM_PIF_YYYY-MM-DD.json'.\n6. En la preview JSON del paso final, colorea las claves y valores para mejor legibilidad (syntax highlighting básico con spans).\nNo toques otros pasos del wizard. Solo exportación y preview.",
+      "files": ["modules/pif-wizard.html"],
+      "estimated_minutes": 15
+    },
+    {
+      "id": "task-005",
+      "priority": 5,
+      "status": "pending",
+      "branch": "bot/intake-module-v2",
+      "title": "Crear módulo Intake v2 integrado en el ecosistema",
+      "prompt": "Crea el archivo 'modules/intake-wizard.html', el módulo M0 del ecosistema. Es la primera herramienta para arrancar un proyecto nuevo. Estructura en 3 pasos:\n\nPASO 1 — PROGRAMA: El usuario selecciona la convocatoria. Por ahora solo 'KA3 Policy Support — Erasmus+ Youth 2026'. Al seleccionar, autocompleta: deadline 15/03/2026, start_date entre 01/09/2026 y 01/03/2027, duration 12-24 meses, eu_grant max 500.000€, cofin_pct 80%, indirect_pct 7%.\n\nPASO 2 — PROYECTO: nombre/acrónimo, consorcio dinámico (añadir/eliminar socios con nombre, ciudad, país, rol). Primer socio = applicant.\n\nPASO 3 — CONTEXTO: 3 campos de texto largo con word counter: Problema/Necesidad (200-500 palabras), Grupos destinatarios (150-400 palabras), Enfoque y propuesta de valor (200-500 palabras).\n\nFINAL: Exportar JSON compatible con el calculator (estructura con meta, fields, state, intake). Guardar/cargar intake.\n\nDiseño: misma paleta que modules/pif-wizard.html (verde oscuro, fondo cálido, Syne+DM Sans). HTML autocontenido.",
+      "files": ["modules/intake-wizard.html"],
+      "estimated_minutes": 25
+    }
+  ]
+}

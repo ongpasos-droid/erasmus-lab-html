@@ -1,0 +1,2281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIF Wizard — Partner Information Form</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<style>
+/* ══════════════════════════════════════
+   CSS RESET & VARIABLES
+   ══════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Palette — warm light + dark green */
+  --bg:          #f5f3ef;
+  --bg-warm:     #faf8f5;
+  --surface:     #ffffff;
+  --surface-alt: #f0ede8;
+  --border:      #e2ddd5;
+  --border-light:#ece8e1;
+
+  /* Green primary */
+  --green-900:   #1a3a2a;
+  --green-800:   #1f4d35;
+  --green-700:   #276841;
+  --green-600:   #2d7a4a;
+  --green-500:   #3a9d60;
+  --green-400:   #5cb87a;
+  --green-100:   #e6f5ec;
+  --green-50:    #f0faf4;
+
+  /* Gold accent */
+  --gold-600:    #b8860b;
+  --gold-500:    #d4a017;
+  --gold-400:    #e6b422;
+  --gold-100:    #fef9e7;
+
+  /* Text */
+  --text:        #1a1a1a;
+  --text-secondary: #555;
+  --text-muted:  #888;
+  --text-inverse:#fff;
+
+  /* Semantic */
+  --danger:      #c0392b;
+  --danger-bg:   #fdf2f2;
+  --success:     #27ae60;
+  --success-bg:  #eafaf1;
+  --warning:     #f39c12;
+  --warning-bg:  #fef9e7;
+  --info:        #2980b9;
+  --info-bg:     #eaf2f8;
+
+  /* Spacing */
+  --radius:      10px;
+  --radius-sm:   6px;
+  --radius-lg:   14px;
+  --shadow:      0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:   0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:   0 8px 24px rgba(0,0,0,0.10);
+
+  /* Typography */
+  --font-heading: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+
+  /* Layout */
+  --header-h:    56px;
+  --stepper-h:   52px;
+  --max-w:       960px;
+}
+
+html { font-size: 15px; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ══════════════════════════════════════
+   APP BAR
+   ══════════════════════════════════════ */
+.app-bar {
+  position: sticky; top: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--green-900);
+  color: var(--text-inverse);
+  display: flex; align-items: center;
+  padding: 0 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.app-bar__brand {
+  font-family: var(--font-heading);
+  font-weight: 700; font-size: 1.1rem;
+  display: flex; align-items: center; gap: 8px;
+}
+.app-bar__brand span { opacity: .6; font-weight: 400; font-size: .85rem; }
+.app-bar__spacer { flex: 1; }
+.app-bar__actions { display: flex; gap: 6px; }
+.app-bar__btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #fff; border-radius: var(--radius-sm);
+  padding: 6px 14px; font-size: .82rem;
+  font-family: var(--font-body); font-weight: 500;
+  cursor: pointer; display: flex; align-items: center; gap: 5px;
+  transition: all .2s;
+}
+.app-bar__btn:hover { background: rgba(255,255,255,0.2); }
+.app-bar__btn--accent {
+  background: var(--gold-500);
+  border-color: var(--gold-600);
+  color: var(--green-900); font-weight: 600;
+}
+.app-bar__btn--accent:hover { background: var(--gold-400); }
+
+/* Hidden file input */
+#importInput { display: none; }
+
+/* ══════════════════════════════════════
+   STEP NAV
+   ══════════════════════════════════════ */
+.step-nav {
+  position: sticky; top: var(--header-h); z-index: 90;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.step-nav__inner {
+  display: flex; align-items: stretch;
+  max-width: 1100px; margin: 0 auto;
+  min-width: max-content;
+}
+.step-tab {
+  flex: 1; min-width: 100px;
+  padding: 12px 10px;
+  text-align: center; cursor: pointer;
+  font-size: .75rem; font-weight: 500;
+  color: var(--text-muted);
+  border-bottom: 3px solid transparent;
+  transition: all .2s;
+  white-space: nowrap;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.step-tab:hover { color: var(--text-secondary); background: var(--bg-warm); }
+.step-tab.active {
+  color: var(--green-700);
+  border-bottom-color: var(--green-600);
+  font-weight: 600;
+}
+.step-tab.completed { color: var(--green-600); }
+.step-tab.completed::before {
+  content: '✓'; display: inline-block;
+  font-size: .7rem; color: var(--success);
+}
+.step-tab__num {
+  font-family: var(--font-mono);
+  font-size: .65rem; opacity: .6;
+}
+
+/* ══════════════════════════════════════
+   MAIN CONTENT
+   ══════════════════════════════════════ */
+.main {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 28px 20px 80px;
+}
+
+/* Step panels */
+.step-panel { display: none; animation: fadeIn .3s ease; }
+.step-panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ══════════════════════════════════════
+   CARDS
+   ══════════════════════════════════════ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+.card--accent { border-top: 3px solid var(--green-600); }
+.card--gold   { border-top: 3px solid var(--gold-500); }
+.card--info   { border-top: 3px solid var(--info); }
+
+.card__title {
+  font-family: var(--font-heading);
+  font-weight: 700; font-size: 1.15rem;
+  color: var(--green-900);
+  margin-bottom: 6px;
+}
+.card__subtitle {
+  font-size: .85rem; color: var(--text-muted);
+  margin-bottom: 20px; line-height: 1.5;
+}
+
+/* ══════════════════════════════════════
+   FORM ELEMENTS
+   ══════════════════════════════════════ */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.form-grid--3 { grid-template-columns: 1fr 1fr 1fr; }
+.form-grid .full { grid-column: 1 / -1; }
+
+.field { display: flex; flex-direction: column; }
+.field label {
+  font-size: .78rem; font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.field label .req { color: var(--danger); margin-left: 2px; }
+
+.field input, .field select, .field textarea {
+  font-family: var(--font-body);
+  font-size: .92rem;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-warm);
+  color: var(--text);
+  transition: border-color .2s, box-shadow .2s;
+  outline: none;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--green-500);
+  box-shadow: 0 0 0 3px rgba(58, 157, 96, 0.12);
+}
+.field textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+.field select { cursor: pointer; }
+.field input[type="checkbox"] {
+  width: 18px; height: 18px; accent-color: var(--green-600);
+  cursor: pointer;
+}
+
+.checkbox-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 0;
+}
+.checkbox-row label {
+  text-transform: none; letter-spacing: 0;
+  font-weight: 500; font-size: .9rem;
+  margin-bottom: 0; cursor: pointer;
+}
+
+/* Word counter */
+.word-counter {
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  margin-top: 4px;
+  text-align: right;
+}
+.word-counter.short  { color: var(--warning); }
+.word-counter.good   { color: var(--success); }
+.word-counter.long   { color: var(--danger); }
+
+/* ══════════════════════════════════════
+   BUTTONS
+   ══════════════════════════════════════ */
+.btn {
+  font-family: var(--font-body);
+  font-weight: 600; font-size: .88rem;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  border: none; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: all .2s;
+}
+.btn--primary {
+  background: var(--green-700); color: #fff;
+}
+.btn--primary:hover { background: var(--green-600); }
+.btn--secondary {
+  background: var(--surface-alt); color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn--secondary:hover { background: var(--border-light); }
+.btn--danger {
+  background: var(--danger-bg); color: var(--danger);
+  border: 1px solid rgba(192,57,43,0.2);
+}
+.btn--danger:hover { background: #fce4e4; }
+.btn--sm { padding: 6px 12px; font-size: .8rem; }
+.btn--gold {
+  background: var(--gold-500); color: var(--green-900);
+}
+.btn--gold:hover { background: var(--gold-400); }
+
+/* ══════════════════════════════════════
+   DYNAMIC ARRAY ITEMS
+   ══════════════════════════════════════ */
+.array-item {
+  background: var(--bg-warm);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 12px;
+  position: relative;
+}
+.array-item__header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.array-item__title {
+  font-family: var(--font-heading);
+  font-weight: 600; font-size: .95rem;
+  color: var(--green-800);
+}
+.array-item__badge {
+  font-family: var(--font-mono);
+  font-size: .65rem;
+  background: var(--green-100);
+  color: var(--green-700);
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+.array-add {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; width: 100%; padding: 14px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  background: transparent; color: var(--text-muted);
+  font-family: var(--font-body); font-size: .88rem;
+  font-weight: 500; cursor: pointer;
+  transition: all .2s;
+  margin-top: 8px;
+}
+.array-add:hover {
+  border-color: var(--green-500);
+  color: var(--green-600);
+  background: var(--green-50);
+}
+
+/* ══════════════════════════════════════
+   STEP NAV BUTTONS (bottom)
+   ══════════════════════════════════════ */
+.step-actions {
+  display: flex; justify-content: space-between;
+  margin-top: 32px; padding-top: 20px;
+  border-top: 1px solid var(--border-light);
+}
+
+/* ══════════════════════════════════════
+   HERO (Step 1)
+   ══════════════════════════════════════ */
+.hero {
+  text-align: center;
+  padding: 40px 20px;
+}
+.hero__icon { font-size: 3rem; margin-bottom: 12px; }
+.hero__title {
+  font-family: var(--font-heading);
+  font-weight: 800; font-size: clamp(1.5rem, 4vw, 2.2rem);
+  color: var(--green-900); margin-bottom: 10px;
+}
+.hero__desc {
+  font-size: 1rem; color: var(--text-secondary);
+  max-width: 620px; margin: 0 auto 28px;
+  line-height: 1.7;
+}
+.badge-row {
+  display: flex; flex-wrap: wrap;
+  justify-content: center; gap: 10px;
+  margin-bottom: 28px;
+}
+.badge {
+  font-family: var(--font-mono);
+  font-size: .72rem; font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.badge--green  { border-color: var(--green-400); color: var(--green-700); background: var(--green-50); }
+.badge--gold   { border-color: var(--gold-400); color: var(--gold-600); background: var(--gold-100); }
+
+/* Info cards row */
+.info-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px; margin-top: 24px;
+}
+.info-card {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 18px 16px;
+  text-align: left;
+}
+.info-card__icon { font-size: 1.3rem; margin-bottom: 6px; }
+.info-card__label {
+  font-size: .72rem; text-transform: uppercase;
+  letter-spacing: .5px; color: var(--text-muted);
+  font-weight: 600; margin-bottom: 2px;
+}
+.info-card__value {
+  font-family: var(--font-heading);
+  font-weight: 700; font-size: 1rem;
+  color: var(--green-900);
+}
+
+/* ══════════════════════════════════════
+   JSON PREVIEW
+   ══════════════════════════════════════ */
+.json-preview {
+  background: var(--green-900);
+  color: #b8e6c8;
+  border-radius: var(--radius);
+  padding: 20px;
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  line-height: 1.5;
+  overflow-x: auto;
+  max-height: 500px;
+  overflow-y: auto;
+  white-space: pre;
+}
+
+/* ══════════════════════════════════════
+   PROGRESS INDICATOR
+   ══════════════════════════════════════ */
+.progress-bar {
+  width: 100%; height: 4px;
+  background: var(--border-light);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.progress-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green-600), var(--green-400));
+  transition: width .4s ease;
+  border-radius: 2px;
+}
+
+/* ══════════════════════════════════════
+   TOAST
+   ══════════════════════════════════════ */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--green-900); color: #fff;
+  padding: 12px 20px; border-radius: var(--radius-sm);
+  font-size: .88rem; font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(100px); opacity: 0;
+  transition: all .3s ease;
+  z-index: 999;
+}
+.toast.visible { transform: translateY(0); opacity: 1; }
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════ */
+/* ══════════════════════════════════════
+   COUNTRY AUTOCOMPLETE
+   ══════════════════════════════════════ */
+.country-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%; left: 0; right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  max-height: 260px;
+  overflow-y: auto;
+  z-index: 50;
+  box-shadow: var(--shadow-md);
+}
+.country-dropdown.open { display: block; }
+.country-dropdown__group {
+  padding: 6px 12px 2px;
+  font-size: .68rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  background: var(--surface-alt);
+  position: sticky; top: 0;
+}
+.country-dropdown__item {
+  padding: 8px 14px;
+  font-size: .88rem;
+  cursor: pointer;
+  transition: background .15s;
+}
+.country-dropdown__item:hover,
+.country-dropdown__item.highlighted {
+  background: var(--green-50);
+  color: var(--green-800);
+}
+.country-dropdown__empty {
+  padding: 12px 14px;
+  font-size: .85rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ══════════════════════════════════════
+   PIF IMPORT ZONE
+   ══════════════════════════════════════ */
+.import-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px 24px;
+  text-align: center;
+  background: var(--bg-warm);
+  transition: all .3s;
+  cursor: pointer;
+  margin-top: 20px;
+}
+.import-zone:hover, .import-zone.dragover {
+  border-color: var(--green-500);
+  background: var(--green-50);
+}
+.import-zone__icon { font-size: 2.2rem; margin-bottom: 8px; }
+.import-zone__title {
+  font-family: var(--font-heading);
+  font-weight: 700; font-size: 1.05rem;
+  color: var(--green-900); margin-bottom: 4px;
+}
+.import-zone__desc {
+  font-size: .85rem; color: var(--text-muted);
+  margin-bottom: 14px; line-height: 1.5;
+}
+.import-zone__formats {
+  display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+}
+.import-zone__tag {
+  font-family: var(--font-mono); font-size: .7rem;
+  padding: 3px 10px; border-radius: 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+#pifFileInput { display: none; }
+
+/* Import results */
+.import-result {
+  background: var(--success-bg);
+  border: 1px solid rgba(39,174,96,.2);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-top: 16px;
+  display: none;
+}
+.import-result.visible { display: block; animation: fadeIn .3s ease; }
+.import-result.error {
+  background: var(--danger-bg);
+  border-color: rgba(192,57,43,.2);
+}
+.import-result__title {
+  font-family: var(--font-heading);
+  font-weight: 700; font-size: .95rem;
+  margin-bottom: 6px;
+}
+.import-result__list {
+  font-size: .82rem; color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* Paste modal */
+.paste-modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.4); z-index: 200;
+  align-items: center; justify-content: center;
+}
+.paste-modal-overlay.visible { display: flex; }
+.paste-modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  width: min(600px, 90vw);
+  max-height: 80vh;
+  box-shadow: var(--shadow-lg);
+}
+.paste-modal__title {
+  font-family: var(--font-heading);
+  font-weight: 700; font-size: 1.1rem;
+  color: var(--green-900); margin-bottom: 6px;
+}
+.paste-modal__desc {
+  font-size: .85rem; color: var(--text-muted);
+  margin-bottom: 16px;
+}
+.paste-modal textarea {
+  width: 100%; min-height: 250px;
+  font-family: var(--font-mono); font-size: .82rem;
+  padding: 14px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-warm); color: var(--text);
+  resize: vertical; line-height: 1.6;
+}
+.paste-modal__actions {
+  display: flex; gap: 10px; justify-content: flex-end;
+  margin-top: 14px;
+}
+
+@media (max-width: 700px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid--3 { grid-template-columns: 1fr; }
+  .app-bar { padding: 0 12px; }
+  .app-bar__brand span { display: none; }
+  .main { padding: 16px 12px 60px; }
+  .card { padding: 18px; }
+  .step-actions { flex-direction: column; gap: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ APP BAR ══════════════ -->
+<header class="app-bar">
+  <div class="app-bar__brand">
+    📋 PIF Wizard <span>Partner Information Form</span>
+  </div>
+  <div class="app-bar__spacer"></div>
+  <div class="app-bar__actions">
+    <button class="app-bar__btn" onclick="saveToLocal()" title="Guardar en navegador">💾 Guardar</button>
+    <button class="app-bar__btn" onclick="triggerImport()" title="Cargar JSON">📂 Cargar</button>
+    <button class="app-bar__btn app-bar__btn--accent" onclick="exportJSON()" title="Exportar JSON">⬇ Exportar</button>
+    <input type="file" id="importInput" accept=".json" onchange="importJSON(event)">
+  </div>
+</header>
+
+<!-- ══════════════ STEP NAV ══════════════ -->
+<nav class="step-nav">
+  <div class="step-nav__inner" id="stepNav"></div>
+</nav>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div class="main">
+
+  <!-- PROGRESS BAR -->
+  <div class="progress-bar"><div class="progress-bar__fill" id="progressFill"></div></div>
+
+  <!-- ════════ STEP 1 — WELCOME ════════ -->
+  <section class="step-panel" data-step="0">
+    <div class="card card--accent">
+      <div class="hero">
+        <div class="hero__icon">📋</div>
+        <h1 class="hero__title">Partner Information Form</h1>
+        <p class="hero__desc">
+          Crea y gestiona la ficha completa de tu organización para proyectos europeos.
+          Toda la información que introduzcas se convierte en datos reutilizables
+          para el resto del ecosistema: presupuestos, propuestas, evaluaciones y más.
+        </p>
+        <div class="badge-row">
+          <span class="badge badge--green">Core Data</span>
+          <span class="badge badge--green">People</span>
+          <span class="badge badge--green">Capacity</span>
+          <span class="badge badge--gold">EU Track Record</span>
+          <span class="badge">JSON Export</span>
+        </div>
+        <div class="info-cards">
+          <div class="info-card">
+            <div class="info-card__icon">🏢</div>
+            <div class="info-card__label">Identidad</div>
+            <div class="info-card__value">Datos de la organización</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card__icon">👥</div>
+            <div class="info-card__label">Equipo</div>
+            <div class="info-card__value">Contactos y personal clave</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card__icon">📊</div>
+            <div class="info-card__label">Experiencia</div>
+            <div class="info-card__value">Capacidad y trayectoria</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card__icon">🔗</div>
+            <div class="info-card__label">Red</div>
+            <div class="info-card__value">Socios y entidades asociadas</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IMPORT FROM EXISTING PIF -->
+    <div class="card card--gold">
+      <h2 class="card__title">¿Ya tienes un PIF de tu organización?</h2>
+      <p class="card__subtitle">Sube tu documento PIF (.docx, .doc o .txt) y extraeremos los datos automáticamente. También puedes pegar el texto directamente.</p>
+
+      <div class="import-zone" id="importZone"
+        onclick="document.getElementById('pifFileInput').click()"
+        ondragover="event.preventDefault(); this.classList.add('dragover')"
+        ondragleave="this.classList.remove('dragover')"
+        ondrop="event.preventDefault(); this.classList.remove('dragover'); handlePifDrop(event)">
+        <div class="import-zone__icon">📄</div>
+        <div class="import-zone__title">Arrastra tu PIF aquí o haz clic para seleccionar</div>
+        <div class="import-zone__desc">Analizaremos el documento y rellenaremos los campos automáticamente</div>
+        <div class="import-zone__formats">
+          <span class="import-zone__tag">.docx</span>
+          <span class="import-zone__tag">.doc</span>
+          <span class="import-zone__tag">.txt</span>
+        </div>
+      </div>
+      <input type="file" id="pifFileInput" accept=".docx,.doc,.txt" onchange="handlePifUpload(event)">
+
+      <div style="text-align:center; margin-top:14px;">
+        <button class="btn btn--secondary btn--sm" onclick="openPasteModal()">📋 Pegar texto del PIF</button>
+      </div>
+
+      <div class="import-result" id="importResult">
+        <div class="import-result__title" id="importResultTitle"></div>
+        <div class="import-result__list" id="importResultList"></div>
+      </div>
+    </div>
+
+    <div class="step-actions">
+      <div></div>
+      <button class="btn btn--primary" onclick="goStep(1)">Comenzar →</button>
+    </div>
+  </section>
+
+  <!-- Paste modal -->
+  <div class="paste-modal-overlay" id="pasteModal">
+    <div class="paste-modal">
+      <div class="paste-modal__title">Pegar texto del PIF</div>
+      <div class="paste-modal__desc">Copia y pega el contenido de tu documento PIF aquí. Extraeremos los datos automáticamente.</div>
+      <textarea id="pasteArea" placeholder="Pega aquí el texto de tu PIF..."></textarea>
+      <div class="paste-modal__actions">
+        <button class="btn btn--secondary" onclick="closePasteModal()">Cancelar</button>
+        <button class="btn btn--primary" onclick="processPastedText()">Procesar texto</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ STEP 2 — IDENTITY ════════ -->
+  <section class="step-panel" data-step="1">
+    <div class="card card--accent">
+      <h2 class="card__title">Identidad de la organización</h2>
+      <p class="card__subtitle">Datos básicos de registro e identificación oficial de la entidad.</p>
+      <div class="form-grid">
+        <div class="field" style="position:relative;">
+          <label>País <span class="req">*</span></label>
+          <input type="text" data-field="country" id="countryInput"
+            placeholder="Escribe para buscar un país..."
+            autocomplete="off"
+            oninput="filterCountries(this.value)"
+            onfocus="filterCountries(this.value)"
+            onblur="setTimeout(()=>closeCountryDropdown(),200)">
+          <div class="country-dropdown" id="countryDropdown"></div>
+        </div>
+        <div class="field">
+          <label>Nombre de la organización <span class="req">*</span></label>
+          <input type="text" data-field="organisation_name" placeholder="Nombre oficial">
+        </div>
+        <div class="field">
+          <label>Acrónimo <span class="req">*</span></label>
+          <input type="text" data-field="acronym" placeholder="Ej. PERMA">
+        </div>
+        <div class="field">
+          <label>Fecha de fundación</label>
+          <input type="date" data-field="foundation_date">
+        </div>
+        <div class="field">
+          <label>PIC / OID</label>
+          <input type="text" data-field="pic_oid" placeholder="9 dígitos">
+        </div>
+        <div class="field">
+          <label>Tipo de organización</label>
+          <select data-field="organisation_type">
+            <option value="">— Seleccionar —</option>
+            <option value="higher_education">Higher Education Institution (HEI)</option>
+            <option value="school">School / Institute</option>
+            <option value="vet">VET Provider</option>
+            <option value="adult_education">Adult Education Organisation</option>
+            <option value="ngo">NGO / Association</option>
+            <option value="foundation">Foundation</option>
+            <option value="social_enterprise">Social Enterprise</option>
+            <option value="sme">SME / Business</option>
+            <option value="large_enterprise">Large Enterprise</option>
+            <option value="public_body">Public Body</option>
+            <option value="research">Research Institute</option>
+            <option value="cultural">Cultural Organisation</option>
+            <option value="international_org">International Organisation</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label>Nombre legal completo (idioma nacional)</label>
+          <input type="text" data-field="legal_name_national" placeholder="Nombre según registro oficial">
+        </div>
+        <div class="field">
+          <label>NIF / VAT</label>
+          <input type="text" data-field="national_id_vat" placeholder="Identificador fiscal">
+        </div>
+        <div class="field">
+          <label>Sitio web</label>
+          <input type="url" data-field="website" placeholder="https://...">
+        </div>
+        <div class="field">
+          <label>Email de la organización</label>
+          <input type="email" data-field="organisation_email" placeholder="info@...">
+        </div>
+        <div class="field">
+          <label>Teléfono 1</label>
+          <input type="tel" data-field="phone_1" placeholder="+34 ...">
+        </div>
+        <div class="field">
+          <label>Teléfono 2</label>
+          <input type="tel" data-field="phone_2">
+        </div>
+        <div class="field full">
+          <label>Dirección</label>
+          <input type="text" data-field="address" placeholder="Calle, número...">
+        </div>
+        <div class="field">
+          <label>Código postal</label>
+          <input type="text" data-field="post_code" placeholder="39001">
+        </div>
+        <div class="field">
+          <label>Ciudad <span class="req">*</span></label>
+          <input type="text" data-field="city" placeholder="Ciudad">
+        </div>
+        <div class="field">
+          <label>Región / Provincia</label>
+          <input type="text" data-field="region" placeholder="Cantabria">
+        </div>
+      </div>
+    </div>
+
+    <!-- Legal (integrado en Identidad) -->
+    <div class="card card--accent">
+      <h2 class="card__title">Datos legales y acreditación</h2>
+      <p class="card__subtitle">Estado legal y acreditaciones oficiales de la entidad.</p>
+      <div class="form-grid">
+        <div class="field">
+          <div class="checkbox-row">
+            <input type="checkbox" id="is_public" data-field="is_public_body">
+            <label for="is_public">Organismo público</label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="checkbox-row">
+            <input type="checkbox" id="is_nonprofit" data-field="is_non_profit">
+            <label for="is_nonprofit">Entidad sin ánimo de lucro</label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="checkbox-row">
+            <input type="checkbox" id="has_accreditation" data-field="has_accreditation" onchange="toggleAccreditation()">
+            <label for="has_accreditation">Tiene acreditación Erasmus+</label>
+          </div>
+        </div>
+        <div class="field" id="accredTypeField" style="display:none;">
+          <label>Tipo de acreditación</label>
+          <select data-field="accreditation_type">
+            <option value="">— Seleccionar —</option>
+            <option value="ka1_vet">KA1 VET</option>
+            <option value="ka1_ade">KA1 Adult Education</option>
+            <option value="ka1_school">KA1 School Education</option>
+            <option value="eche">ECHE (Higher Education)</option>
+            <option value="quality_label_youth">Quality Label Youth</option>
+            <option value="quality_label_evs">Quality Label EVS/ESC</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="field" id="accredRefField" style="display:none;">
+          <label>Referencia de acreditación</label>
+          <input type="text" data-field="accreditation_reference" placeholder="Código / referencia">
+        </div>
+      </div>
+    </div>
+
+    <div class="step-actions">
+      <button class="btn btn--secondary" onclick="goStep(0)">← Inicio</button>
+      <button class="btn btn--primary" onclick="goStep(2)">Siguiente →</button>
+    </div>
+  </section>
+
+  <!-- ════════ STEP 3 — CONTACTS (antes 4) ════════ -->
+  <section class="step-panel" data-step="2">
+    <div class="card card--accent">
+      <h2 class="card__title">Contactos principales</h2>
+      <p class="card__subtitle">Personas de contacto de la organización para proyectos europeos.</p>
+      <div id="contactsList"></div>
+      <button class="array-add" onclick="addContact()">＋ Añadir contacto</button>
+    </div>
+    <div class="step-actions">
+      <button class="btn btn--secondary" onclick="goStep(1)">← Anterior</button>
+      <button class="btn btn--primary" onclick="goStep(3)">Siguiente →</button>
+    </div>
+  </section>
+
+  <!-- ════════ STEP 4 — CAPACITY ════════ -->
+  <section class="step-panel" data-step="3">
+    <div class="card card--accent">
+      <h2 class="card__title">Capacidad y experiencia</h2>
+      <p class="card__subtitle">Perfil de la organización: recursos, experiencia y áreas de expertise.</p>
+      <div class="form-grid">
+        <div class="field full">
+          <label>Presentación breve de la organización <span class="req">*</span></label>
+          <textarea data-field="brief_presentation" rows="5"
+            placeholder="Describe tu organización: misión, actividades principales, sector, alcance geográfico..."></textarea>
+          <div class="word-counter" data-counter="brief_presentation">0 palabras</div>
+        </div>
+        <div class="field full">
+          <label>Experiencia relevante para este tipo de proyecto</label>
+          <textarea data-field="relevant_experience" rows="5"
+            placeholder="Proyectos anteriores, áreas de trabajo, competencias del equipo..."></textarea>
+          <div class="word-counter" data-counter="relevant_experience">0 palabras</div>
+        </div>
+        <div class="field">
+          <label>Tamaño aprox. del equipo</label>
+          <select data-field="staff_size">
+            <option value="">— Seleccionar —</option>
+            <option value="1-5">1 – 5 personas</option>
+            <option value="6-15">6 – 15 personas</option>
+            <option value="16-50">16 – 50 personas</option>
+            <option value="51-250">51 – 250 personas</option>
+            <option value="250+">Más de 250</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Proyectos UE por año (aprox.)</label>
+          <select data-field="eu_projects_per_year">
+            <option value="">— Seleccionar —</option>
+            <option value="0">Ninguno (primera vez)</option>
+            <option value="1-2">1 – 2</option>
+            <option value="3-5">3 – 5</option>
+            <option value="6-10">6 – 10</option>
+            <option value="10+">Más de 10</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="checkbox-row">
+            <input type="checkbox" id="has_training" data-field="has_training_facilities">
+            <label for="has_training">Dispone de instalaciones de formación</label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="checkbox-row">
+            <input type="checkbox" id="has_digital" data-field="has_digital_infrastructure">
+            <label for="has_digital">Dispone de infraestructura digital</label>
+          </div>
+        </div>
+        <div class="field full">
+          <label>Áreas de expertise</label>
+          <input type="text" data-field="expertise_areas" placeholder="Ej: educación, FP, emprendimiento, inclusión, digital... (separadas por comas)">
+        </div>
+        <div class="field full">
+          <label>Roles habituales en Erasmus+</label>
+          <input type="text" data-field="erasmus_roles" placeholder="Ej: coordinador, socio, organización de acogida... (separados por comas)">
+        </div>
+      </div>
+    </div>
+    <div class="step-actions">
+      <button class="btn btn--secondary" onclick="goStep(2)">← Anterior</button>
+      <button class="btn btn--primary" onclick="goStep(4)">Siguiente →</button>
+    </div>
+  </section>
+
+  <!-- ════════ STEP 5 — KEY STAFF ════════ -->
+  <section class="step-panel" data-step="4">
+    <div class="card card--accent">
+      <h2 class="card__title">Personal clave</h2>
+      <p class="card__subtitle">Personas del equipo que participarán directamente en proyectos europeos.</p>
+      <div id="staffList"></div>
+      <button class="array-add" onclick="addStaff()">＋ Añadir persona</button>
+    </div>
+    <div class="step-actions">
+      <button class="btn btn--secondary" onclick="goStep(3)">← Anterior</button>
+      <button class="btn btn--primary" onclick="goStep(5)">Siguiente →</button>
+    </div>
+  </section>
+
+  <!-- ════════ STEP 6 — PREVIOUS PROJECTS ════════ -->
+  <section class="step-panel" data-step="5">
+    <div class="card card--gold">
+      <h2 class="card__title">Proyectos previos UE</h2>
+      <p class="card__subtitle">Historial de proyectos europeos en los que la organización ha participado.</p>
+      <div id="projectsList"></div>
+      <button class="array-add" onclick="addProject()">＋ Añadir proyecto</button>
+    </div>
+    <div class="step-actions">
+      <button class="btn btn--secondary" onclick="goStep(4)">← Anterior</button>
+      <button class="btn btn--primary" onclick="goStep(6)">Siguiente →</button>
+    </div>
+  </section>
+
+  <!-- ════════ STEP 7 — NETWORKS + PREVIEW ════════ -->
+  <section class="step-panel" data-step="6">
+    <div class="card card--info">
+      <h2 class="card__title">Redes y entidades asociadas</h2>
+      <p class="card__subtitle">Organizaciones vinculadas, socios potenciales o entidades de la red.</p>
+      <div id="entitiesList"></div>
+      <button class="array-add" onclick="addEntity()">＋ Añadir entidad</button>
+    </div>
+
+    <div class="card card--accent" style="margin-top: 24px;">
+      <h2 class="card__title">Resumen y exportación</h2>
+      <p class="card__subtitle">Vista previa de todos los datos. Exporta el JSON para usarlo en otros módulos.</p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+        <button class="btn btn--primary" onclick="refreshPreview()">🔄 Actualizar preview</button>
+        <button class="btn btn--gold" onclick="exportJSON()">⬇ Exportar JSON</button>
+        <button class="btn btn--secondary" onclick="saveToLocal()">💾 Guardar en navegador</button>
+      </div>
+      <div class="json-preview" id="jsonPreview">{ "info": "Pulsa 'Actualizar preview' para ver los datos" }</div>
+    </div>
+    <div class="step-actions">
+      <button class="btn btn--secondary" onclick="goStep(5)">← Anterior</button>
+      <div></div>
+    </div>
+  </section>
+
+</div><!-- /main -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   PIF WIZARD — JavaScript
+   Module M6 · Partner Information Form
+   Ecosystem: Erasmus+ Funding School
+   ══════════════════════════════════════════════════════════════ */
+
+// ─── STEP DEFINITIONS ───
+const STEPS = [
+  { name: 'Bienvenida',     short: 'Inicio'    },
+  { name: 'Identidad',      short: 'Identidad' },
+  { name: 'Contactos',      short: 'Contactos' },
+  { name: 'Capacidad',      short: 'Capacidad' },
+  { name: 'Personal',       short: 'Personal'  },
+  { name: 'Proyectos UE',   short: 'Proyectos' },
+  { name: 'Redes + Export', short: 'Redes'     }
+];
+
+let currentStep = 0;
+const STORAGE_KEY = 'pif_wizard_state';
+
+// ─── COUNTRY DATA (Erasmus+ Programme Guide 2025 — official classification) ───
+const COUNTRY_GROUPS = {
+  'EU Member States': [
+    'Belgium','Bulgaria','Czechia','Denmark','Germany','Estonia','Ireland',
+    'Greece','Spain','France','Croatia','Italy','Cyprus','Latvia','Lithuania',
+    'Luxembourg','Hungary','Malta','Netherlands','Austria','Poland','Portugal',
+    'Romania','Slovenia','Slovakia','Finland','Sweden'
+  ],
+  'Third countries associated to the Programme': [
+    'Iceland','Liechtenstein','Norway',
+    'North Macedonia','Serbia','Türkiye'
+  ],
+  'Region 1 — Western Balkans': [
+    'Albania','Bosnia and Herzegovina','Kosovo','Montenegro'
+  ],
+  'Region 2 — Neighbourhood East': [
+    'Armenia','Azerbaijan','Belarus','Georgia','Moldova','Ukraine'
+  ],
+  'Region 3 — South-Mediterranean': [
+    'Algeria','Egypt','Israel','Jordan','Lebanon','Libya','Morocco',
+    'Palestine','Syria','Tunisia'
+  ],
+  'Region 4 — Russian Federation': [
+    'Russia'
+  ],
+  'Region 5 — Asia': [
+    'Bangladesh','Bhutan','Cambodia','China','DPR Korea','India','Indonesia',
+    'Laos','Malaysia','Maldives','Mongolia','Myanmar','Nepal','Pakistan',
+    'Philippines','Sri Lanka','Thailand','Vietnam',
+    'Brunei','Hong Kong','Japan','Republic of Korea','Macao','Singapore','Taiwan'
+  ],
+  'Region 6 — Central Asia': [
+    'Afghanistan','Kazakhstan','Kyrgyzstan','Tajikistan','Turkmenistan','Uzbekistan'
+  ],
+  'Region 7 — Middle East': [
+    'Iran','Iraq','Yemen',
+    'Bahrain','Kuwait','Oman','Qatar','Saudi Arabia','United Arab Emirates'
+  ],
+  'Region 8 — Pacific': [
+    'Fiji','Kiribati','Marshall Islands','Micronesia','Nauru','Niue','Palau',
+    'Papua New Guinea','Samoa','Solomon Islands','Timor-Leste','Tonga','Tuvalu','Vanuatu',
+    'Australia','Cook Islands','New Zealand'
+  ],
+  'Region 9 — Sub-Saharan Africa': [
+    'Angola','Benin','Botswana','Burkina Faso','Burundi','Cameroon','Cabo Verde',
+    'Central African Republic','Chad','Comoros','Congo','Congo (DRC)',
+    'Côte d\'Ivoire','Djibouti','Equatorial Guinea','Eritrea','Eswatini','Ethiopia',
+    'Gabon','Gambia','Ghana','Guinea','Guinea-Bissau','Kenya','Lesotho','Liberia',
+    'Madagascar','Malawi','Mali','Mauritania','Mauritius','Mozambique','Namibia',
+    'Niger','Nigeria','Rwanda','Sao Tome and Principe','Senegal','Seychelles',
+    'Sierra Leone','Somalia','South Africa','South Sudan','Sudan','Tanzania',
+    'Togo','Uganda','Zambia','Zimbabwe'
+  ],
+  'Region 10 — Latin America': [
+    'Argentina','Bolivia','Brazil','Chile','Colombia','Costa Rica','Ecuador',
+    'El Salvador','Guatemala','Honduras','Mexico','Nicaragua','Panama',
+    'Paraguay','Peru','Uruguay','Venezuela'
+  ],
+  'Region 11 — Caribbean': [
+    'Antigua & Barbuda','Bahamas','Barbados','Belize','Cuba','Dominica',
+    'Dominican Republic','Grenada','Guyana','Haiti','Jamaica',
+    'St Kitts and Nevis','St Lucia','St Vincent & Grenadines','Suriname',
+    'Trinidad & Tobago'
+  ],
+  'Region 12 — US and Canada': [
+    'United States of America','Canada'
+  ],
+  'Region 13': [
+    'Andorra','Monaco','San Marino','Vatican City State'
+  ],
+  'Region 14': [
+    'Faroe Islands','Switzerland','United Kingdom'
+  ]
+};
+
+// ─── STATE OBJECT ───
+// ─── ID GENERATOR (must be before createEmptyState) ───
+const idCounters = { partner: 0, contact: 0, staff: 0, prevproj: 0, assoc: 0 };
+
+function generateId(prefix) {
+  idCounters[prefix] = (idCounters[prefix] || 0) + 1;
+  return `${prefix}_${Date.now()}_${idCounters[prefix]}`;
+}
+
+let state = createEmptyState();
+
+function createEmptyState() {
+  return {
+    // Meta
+    partner_internal_id: generateId('partner'),
+    record_status: 'draft',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+
+    // Step 2 — Identity
+    country: '',
+    organisation_name: '',
+    acronym: '',
+    foundation_date: '',
+    pic_oid: '',
+    organisation_type: '',
+    legal_name_national: '',
+    national_id_vat: '',
+    website: '',
+    organisation_email: '',
+    phone_1: '',
+    phone_2: '',
+    address: '',
+    post_code: '',
+    city: '',
+    region: '',
+
+    // Step 3 — Legal
+    is_public_body: false,
+    is_non_profit: false,
+    has_accreditation: false,
+    accreditation_type: '',
+    accreditation_reference: '',
+
+    // Step 5 — Capacity
+    brief_presentation: '',
+    relevant_experience: '',
+    staff_size: '',
+    eu_projects_per_year: '',
+    has_training_facilities: false,
+    has_digital_infrastructure: false,
+    expertise_areas: '',
+    erasmus_roles: '',
+
+    // Dynamic arrays
+    contacts: [],
+    key_staff: [],
+    previous_projects: [],
+    associated_partners: []
+  };
+}
+
+// ─── INIT ───
+document.addEventListener('DOMContentLoaded', () => {
+  populateCountrySelect();
+  renderStepNav();
+  loadFromLocal();
+  goStep(0);
+  bindFieldListeners();
+});
+
+// ─── COUNTRY AUTOCOMPLETE ───
+// Build flat list preserving group order for the dropdown
+const COUNTRY_FLAT = [];
+Object.entries(COUNTRY_GROUPS).forEach(([group, countries]) => {
+  countries.forEach(c => COUNTRY_FLAT.push({ name: c, group }));
+});
+
+function populateCountrySelect() {
+  // No longer needed for <select>, but kept for compatibility.
+  // The autocomplete input handles everything via filterCountries().
+}
+
+function filterCountries(query) {
+  const dd = document.getElementById('countryDropdown');
+  if (!dd) return;
+  const q = query.toLowerCase().trim();
+
+  let filtered;
+  if (q.length === 0) {
+    // Show all, grouped
+    filtered = COUNTRY_FLAT;
+  } else {
+    filtered = COUNTRY_FLAT.filter(c => c.name.toLowerCase().includes(q));
+  }
+
+  if (filtered.length === 0) {
+    dd.innerHTML = '<div class="country-dropdown__empty">No se encontró ningún país</div>';
+    dd.classList.add('open');
+    return;
+  }
+
+  let html = '';
+  let lastGroup = '';
+  filtered.forEach(c => {
+    if (c.group !== lastGroup) {
+      lastGroup = c.group;
+      html += `<div class="country-dropdown__group">${esc(c.group)}</div>`;
+    }
+    html += `<div class="country-dropdown__item" onmousedown="selectCountry('${esc(c.name)}')">${esc(c.name)}</div>`;
+  });
+
+  dd.innerHTML = html;
+  dd.classList.add('open');
+}
+
+function selectCountry(name) {
+  const input = document.getElementById('countryInput');
+  if (input) {
+    input.value = name;
+    state.country = name;
+  }
+  closeCountryDropdown();
+}
+
+function closeCountryDropdown() {
+  const dd = document.getElementById('countryDropdown');
+  if (dd) dd.classList.remove('open');
+}
+
+// ─── STEP NAVIGATION ───
+function renderStepNav() {
+  const nav = document.getElementById('stepNav');
+  nav.innerHTML = STEPS.map((s, i) => `
+    <div class="step-tab${i === currentStep ? ' active' : ''}" onclick="goStep(${i})" data-step-tab="${i}">
+      <span class="step-tab__num">${String(i + 1).padStart(2, '0')}</span>
+      ${s.short}
+    </div>
+  `).join('');
+}
+
+function goStep(n) {
+  collectFields(); // save current before leaving
+  currentStep = n;
+
+  // Update panels
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  const panel = document.querySelector(`.step-panel[data-step="${n}"]`);
+  if (panel) panel.classList.add('active');
+
+  // Update tabs
+  document.querySelectorAll('.step-tab').forEach((t, i) => {
+    t.classList.remove('active');
+    if (i === n) t.classList.add('active');
+  });
+
+  // Progress
+  const pct = ((n + 1) / STEPS.length) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+
+  // Populate fields for current step
+  populateFields();
+
+  // Render dynamic arrays (7 steps: 0=Inicio, 1=Identidad, 2=Contactos, 3=Capacidad, 4=Personal, 5=Proyectos, 6=Redes)
+  if (n === 2) renderContacts();
+  if (n === 4) renderStaff();
+  if (n === 5) renderProjects();
+  if (n === 6) { renderEntities(); refreshPreview(); }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── FIELD BINDING (two-way) ───
+function bindFieldListeners() {
+  // Word counters
+  document.querySelectorAll('[data-counter]').forEach(el => {
+    const field = el.getAttribute('data-counter');
+    const textarea = document.querySelector(`[data-field="${field}"]`);
+    if (textarea) {
+      textarea.addEventListener('input', () => updateWordCounter(textarea, el, field));
+    }
+  });
+}
+
+function updateWordCounter(textarea, counterEl, field) {
+  const words = textarea.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+  counterEl.textContent = `${words} palabras`;
+
+  // Thresholds
+  const thresholds = {
+    brief_presentation: { min: 100, max: 500 },
+    relevant_experience: { min: 80, max: 400 }
+  };
+  const t = thresholds[field] || { min: 50, max: 300 };
+
+  counterEl.classList.remove('short', 'good', 'long');
+  if (words === 0) return;
+  if (words < t.min) counterEl.classList.add('short');
+  else if (words > t.max) counterEl.classList.add('long');
+  else counterEl.classList.add('good');
+}
+
+// ─── COLLECT FIELDS FROM DOM → STATE ───
+function collectFields() {
+  document.querySelectorAll('[data-field]').forEach(el => {
+    const key = el.getAttribute('data-field');
+    if (!(key in state)) return; // skip array sub-fields
+    if (el.type === 'checkbox') state[key] = el.checked;
+    else state[key] = el.value;
+  });
+  state.updated_at = new Date().toISOString();
+}
+
+// ─── POPULATE FIELDS FROM STATE → DOM ───
+function populateFields() {
+  document.querySelectorAll('[data-field]').forEach(el => {
+    const key = el.getAttribute('data-field');
+    if (!(key in state)) return;
+    if (el.type === 'checkbox') el.checked = !!state[key];
+    else el.value = state[key] || '';
+  });
+
+  // Trigger word counters
+  document.querySelectorAll('[data-counter]').forEach(el => {
+    const field = el.getAttribute('data-counter');
+    const textarea = document.querySelector(`[data-field="${field}"]`);
+    if (textarea) updateWordCounter(textarea, el, field);
+  });
+
+  // Toggle accreditation
+  toggleAccreditation();
+}
+
+// ─── ACCREDITATION TOGGLE ───
+function toggleAccreditation() {
+  const checked = document.getElementById('has_accreditation')?.checked;
+  const t = document.getElementById('accredTypeField');
+  const r = document.getElementById('accredRefField');
+  if (t) t.style.display = checked ? '' : 'none';
+  if (r) r.style.display = checked ? '' : 'none';
+}
+
+// ═══════════════════════════════════════
+// DYNAMIC ARRAYS — CONTACTS
+// ═══════════════════════════════════════
+function addContact() {
+  state.contacts.push({
+    contact_internal_id: generateId('contact'),
+    name: '', title: '', department: '', position: '',
+    email: '', phone: '',
+    is_legal_representative: false,
+    is_primary_contact: false
+  });
+  renderContacts();
+}
+
+function removeContact(idx) {
+  state.contacts.splice(idx, 1);
+  renderContacts();
+}
+
+function renderContacts() {
+  const list = document.getElementById('contactsList');
+  if (!list) return;
+  if (state.contacts.length === 0) {
+    list.innerHTML = '<p style="color:var(--text-muted);font-size:.88rem;padding:12px 0;">No hay contactos. Pulsa el botón para añadir uno.</p>';
+    return;
+  }
+  list.innerHTML = state.contacts.map((c, i) => `
+    <div class="array-item">
+      <div class="array-item__header">
+        <span class="array-item__title">${c.name || 'Contacto ' + (i + 1)}</span>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span class="array-item__badge">${c.contact_internal_id}</span>
+          <button class="btn btn--danger btn--sm" onclick="removeContact(${i})">✕</button>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Nombre completo <span class="req">*</span></label>
+          <input type="text" value="${esc(c.name)}" onchange="state.contacts[${i}].name=this.value;renderContacts()">
+        </div>
+        <div class="field">
+          <label>Título / Tratamiento</label>
+          <input type="text" value="${esc(c.title)}" onchange="state.contacts[${i}].title=this.value" placeholder="Sr., Sra., Dr...">
+        </div>
+        <div class="field">
+          <label>Departamento</label>
+          <input type="text" value="${esc(c.department)}" onchange="state.contacts[${i}].department=this.value">
+        </div>
+        <div class="field">
+          <label>Cargo</label>
+          <input type="text" value="${esc(c.position)}" onchange="state.contacts[${i}].position=this.value" placeholder="Ej: Director, Coordinador...">
+        </div>
+        <div class="field">
+          <label>Email <span class="req">*</span></label>
+          <input type="email" value="${esc(c.email)}" onchange="state.contacts[${i}].email=this.value">
+        </div>
+        <div class="field">
+          <label>Teléfono</label>
+          <input type="tel" value="${esc(c.phone)}" onchange="state.contacts[${i}].phone=this.value">
+        </div>
+        <div class="field">
+          <div class="checkbox-row">
+            <input type="checkbox" ${c.is_legal_representative ? 'checked' : ''}
+              onchange="state.contacts[${i}].is_legal_representative=this.checked" id="lr_${i}">
+            <label for="lr_${i}">Representante legal</label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="checkbox-row">
+            <input type="checkbox" ${c.is_primary_contact ? 'checked' : ''}
+              onchange="state.contacts[${i}].is_primary_contact=this.checked" id="pc_${i}">
+            <label for="pc_${i}">Contacto principal</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════
+// DYNAMIC ARRAYS — KEY STAFF
+// ═══════════════════════════════════════
+function addStaff() {
+  state.key_staff.push({
+    staff_internal_id: generateId('staff'),
+    name: '', role: '', summary: ''
+  });
+  renderStaff();
+}
+
+function removeStaff(idx) {
+  state.key_staff.splice(idx, 1);
+  renderStaff();
+}
+
+function renderStaff() {
+  const list = document.getElementById('staffList');
+  if (!list) return;
+  if (state.key_staff.length === 0) {
+    list.innerHTML = '<p style="color:var(--text-muted);font-size:.88rem;padding:12px 0;">No hay personal clave registrado.</p>';
+    return;
+  }
+  list.innerHTML = state.key_staff.map((s, i) => `
+    <div class="array-item">
+      <div class="array-item__header">
+        <span class="array-item__title">${s.name || 'Persona ' + (i + 1)}</span>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span class="array-item__badge">${s.staff_internal_id}</span>
+          <button class="btn btn--danger btn--sm" onclick="removeStaff(${i})">✕</button>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Nombre completo <span class="req">*</span></label>
+          <input type="text" value="${esc(s.name)}" onchange="state.key_staff[${i}].name=this.value;renderStaff()">
+        </div>
+        <div class="field">
+          <label>Rol en el proyecto</label>
+          <input type="text" value="${esc(s.role)}" onchange="state.key_staff[${i}].role=this.value" placeholder="Ej: Project Manager, Trainer...">
+        </div>
+        <div class="field full">
+          <label>Resumen de perfil</label>
+          <textarea rows="3" onchange="state.key_staff[${i}].summary=this.value"
+            placeholder="Experiencia relevante, cualificaciones, contribución prevista...">${esc(s.summary)}</textarea>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════
+// DYNAMIC ARRAYS — PREVIOUS PROJECTS
+// ═══════════════════════════════════════
+function addProject() {
+  state.previous_projects.push({
+    project_internal_id: generateId('prevproj'),
+    programme: '', year: '', code: '', role: '', title: ''
+  });
+  renderProjects();
+}
+
+function removeProject(idx) {
+  state.previous_projects.splice(idx, 1);
+  renderProjects();
+}
+
+function renderProjects() {
+  const list = document.getElementById('projectsList');
+  if (!list) return;
+  if (state.previous_projects.length === 0) {
+    list.innerHTML = '<p style="color:var(--text-muted);font-size:.88rem;padding:12px 0;">No hay proyectos previos registrados.</p>';
+    return;
+  }
+  list.innerHTML = state.previous_projects.map((p, i) => `
+    <div class="array-item">
+      <div class="array-item__header">
+        <span class="array-item__title">${p.title || p.code || 'Proyecto ' + (i + 1)}</span>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span class="array-item__badge">${p.project_internal_id}</span>
+          <button class="btn btn--danger btn--sm" onclick="removeProject(${i})">✕</button>
+        </div>
+      </div>
+      <div class="form-grid--3 form-grid">
+        <div class="field">
+          <label>Programa</label>
+          <select onchange="state.previous_projects[${i}].programme=this.value">
+            <option value="">— Seleccionar —</option>
+            <option value="Erasmus+ KA1" ${p.programme==='Erasmus+ KA1'?'selected':''}>Erasmus+ KA1</option>
+            <option value="Erasmus+ KA2" ${p.programme==='Erasmus+ KA2'?'selected':''}>Erasmus+ KA2</option>
+            <option value="Erasmus+ KA3" ${p.programme==='Erasmus+ KA3'?'selected':''}>Erasmus+ KA3</option>
+            <option value="ESC" ${p.programme==='ESC'?'selected':''}>European Solidarity Corps</option>
+            <option value="Horizon" ${p.programme==='Horizon'?'selected':''}>Horizon Europe</option>
+            <option value="Creative Europe" ${p.programme==='Creative Europe'?'selected':''}>Creative Europe</option>
+            <option value="CERV" ${p.programme==='CERV'?'selected':''}>CERV</option>
+            <option value="Interreg" ${p.programme==='Interreg'?'selected':''}>Interreg</option>
+            <option value="Other" ${p.programme==='Other'?'selected':''}>Otro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Año</label>
+          <input type="number" min="2000" max="2030" value="${esc(p.year)}" onchange="state.previous_projects[${i}].year=this.value" placeholder="2024">
+        </div>
+        <div class="field">
+          <label>Código del proyecto</label>
+          <input type="text" value="${esc(p.code)}" onchange="state.previous_projects[${i}].code=this.value" placeholder="2024-1-ES01-KA220...">
+        </div>
+        <div class="field">
+          <label>Rol de la organización</label>
+          <select onchange="state.previous_projects[${i}].role=this.value">
+            <option value="">— Seleccionar —</option>
+            <option value="coordinator" ${p.role==='coordinator'?'selected':''}>Coordinador</option>
+            <option value="partner" ${p.role==='partner'?'selected':''}>Socio</option>
+            <option value="associated" ${p.role==='associated'?'selected':''}>Socio asociado</option>
+          </select>
+        </div>
+        <div class="field" style="grid-column: span 2;">
+          <label>Título del proyecto</label>
+          <input type="text" value="${esc(p.title)}" onchange="state.previous_projects[${i}].title=this.value;renderProjects()" placeholder="Título completo">
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════
+// DYNAMIC ARRAYS — ASSOCIATED PARTNERS
+// ═══════════════════════════════════════
+function addEntity() {
+  state.associated_partners.push({
+    entity_internal_id: generateId('assoc'),
+    entity_name: '', entity_type: '', contact_person: '',
+    email: '', phone: '', country: '', city: '',
+    website: '', relation_to_project: ''
+  });
+  renderEntities();
+}
+
+function removeEntity(idx) {
+  state.associated_partners.splice(idx, 1);
+  renderEntities();
+}
+
+function renderEntities() {
+  const list = document.getElementById('entitiesList');
+  if (!list) return;
+  if (state.associated_partners.length === 0) {
+    list.innerHTML = '<p style="color:var(--text-muted);font-size:.88rem;padding:12px 0;">No hay entidades asociadas registradas.</p>';
+    return;
+  }
+  list.innerHTML = state.associated_partners.map((e, i) => `
+    <div class="array-item">
+      <div class="array-item__header">
+        <span class="array-item__title">${e.entity_name || 'Entidad ' + (i + 1)}</span>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span class="array-item__badge">${e.entity_internal_id}</span>
+          <button class="btn btn--danger btn--sm" onclick="removeEntity(${i})">✕</button>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Nombre de la entidad <span class="req">*</span></label>
+          <input type="text" value="${esc(e.entity_name)}" onchange="state.associated_partners[${i}].entity_name=this.value;renderEntities()">
+        </div>
+        <div class="field">
+          <label>Tipo de entidad</label>
+          <select onchange="state.associated_partners[${i}].entity_type=this.value">
+            <option value="">— Seleccionar —</option>
+            <option value="ngo" ${e.entity_type==='ngo'?'selected':''}>ONG / Asociación</option>
+            <option value="public_body" ${e.entity_type==='public_body'?'selected':''}>Organismo público</option>
+            <option value="enterprise" ${e.entity_type==='enterprise'?'selected':''}>Empresa</option>
+            <option value="education" ${e.entity_type==='education'?'selected':''}>Centro educativo</option>
+            <option value="research" ${e.entity_type==='research'?'selected':''}>Instituto de investigación</option>
+            <option value="network" ${e.entity_type==='network'?'selected':''}>Red / Plataforma</option>
+            <option value="other" ${e.entity_type==='other'?'selected':''}>Otro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Persona de contacto</label>
+          <input type="text" value="${esc(e.contact_person)}" onchange="state.associated_partners[${i}].contact_person=this.value">
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" value="${esc(e.email)}" onchange="state.associated_partners[${i}].email=this.value">
+        </div>
+        <div class="field">
+          <label>Teléfono</label>
+          <input type="tel" value="${esc(e.phone)}" onchange="state.associated_partners[${i}].phone=this.value">
+        </div>
+        <div class="field">
+          <label>País</label>
+          <input type="text" value="${esc(e.country)}" onchange="state.associated_partners[${i}].country=this.value">
+        </div>
+        <div class="field">
+          <label>Ciudad</label>
+          <input type="text" value="${esc(e.city)}" onchange="state.associated_partners[${i}].city=this.value">
+        </div>
+        <div class="field">
+          <label>Sitio web</label>
+          <input type="url" value="${esc(e.website)}" onchange="state.associated_partners[${i}].website=this.value" placeholder="https://...">
+        </div>
+        <div class="field full">
+          <label>Relación con el proyecto</label>
+          <input type="text" value="${esc(e.relation_to_project)}" onchange="state.associated_partners[${i}].relation_to_project=this.value"
+            placeholder="Ej: Organización de acogida, difusión local, expertise técnica...">
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════
+// JSON PREVIEW
+// ═══════════════════════════════════════
+function refreshPreview() {
+  collectFields();
+  const output = buildExportJSON();
+  document.getElementById('jsonPreview').textContent = JSON.stringify(output, null, 2);
+}
+
+// ═══════════════════════════════════════
+// EXPORT / IMPORT / PERSISTENCE
+// ═══════════════════════════════════════
+
+function buildExportJSON() {
+  collectFields();
+  return {
+    meta: {
+      version: '1.0',
+      tool: 'pif-wizard',
+      generated_at: new Date().toISOString(),
+      source_module: 'pif'
+    },
+    partner: {
+      partner_internal_id: state.partner_internal_id,
+      record_status: state.record_status,
+      created_at: state.created_at,
+      updated_at: state.updated_at,
+
+      // Identity
+      country: state.country,
+      organisation_name: state.organisation_name,
+      acronym: state.acronym,
+      foundation_date: state.foundation_date,
+      pic_oid: state.pic_oid,
+      organisation_type: state.organisation_type,
+      legal_name_national: state.legal_name_national,
+      national_id_vat: state.national_id_vat,
+      website: state.website,
+      organisation_email: state.organisation_email,
+      phone_1: state.phone_1,
+      phone_2: state.phone_2,
+      address: state.address,
+      post_code: state.post_code,
+      city: state.city,
+      region: state.region,
+
+      // Legal
+      is_public_body: state.is_public_body,
+      is_non_profit: state.is_non_profit,
+      has_accreditation: state.has_accreditation,
+      accreditation_type: state.accreditation_type,
+      accreditation_reference: state.accreditation_reference,
+
+      // Capacity
+      brief_presentation: state.brief_presentation,
+      relevant_experience: state.relevant_experience,
+      staff_size: state.staff_size,
+      eu_projects_per_year: state.eu_projects_per_year,
+      has_training_facilities: state.has_training_facilities,
+      has_digital_infrastructure: state.has_digital_infrastructure,
+      expertise_areas: state.expertise_areas,
+      erasmus_roles: state.erasmus_roles
+    },
+    contacts: state.contacts,
+    key_staff: state.key_staff,
+    previous_projects: state.previous_projects,
+    associated_partners: state.associated_partners
+  };
+}
+
+function exportJSON() {
+  const data = buildExportJSON();
+  const name = (state.acronym || state.organisation_name || 'partner').replace(/\s+/g, '_');
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${name}_PIF.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('JSON exportado: ' + a.download);
+}
+
+function triggerImport() {
+  document.getElementById('importInput').click();
+}
+
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+
+      // Detect format: full export or flat state
+      if (data.partner && typeof data.partner === 'object') {
+        // Standard PIF export format
+        Object.keys(data.partner).forEach(k => {
+          if (k in state) state[k] = data.partner[k];
+        });
+        if (data.contacts) state.contacts = data.contacts;
+        if (data.key_staff) state.key_staff = data.key_staff;
+        if (data.previous_projects) state.previous_projects = data.previous_projects;
+        if (data.associated_partners) state.associated_partners = data.associated_partners;
+      } else {
+        // Flat format (direct state dump)
+        Object.keys(data).forEach(k => {
+          if (k in state) state[k] = data[k];
+        });
+      }
+
+      // Rebuild ID counters
+      rebuildIdCounters();
+
+      populateFields();
+      if (currentStep === 2) renderContacts();
+      if (currentStep === 4) renderStaff();
+      if (currentStep === 5) renderProjects();
+      if (currentStep === 6) { renderEntities(); refreshPreview(); }
+
+      showToast('Datos importados correctamente');
+    } catch (err) {
+      showToast('Error al importar: JSON no válido');
+      console.error(err);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = ''; // reset
+}
+
+function rebuildIdCounters() {
+  idCounters.contact = state.contacts.length;
+  idCounters.staff = state.key_staff.length;
+  idCounters.prevproj = state.previous_projects.length;
+  idCounters.assoc = state.associated_partners.length;
+}
+
+// ─── LOCAL STORAGE ───
+function saveToLocal() {
+  collectFields();
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    showToast('Guardado en el navegador');
+  } catch (err) {
+    showToast('Error al guardar');
+  }
+}
+
+function loadFromLocal() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const data = JSON.parse(saved);
+      Object.keys(data).forEach(k => {
+        if (k in state) state[k] = data[k];
+      });
+      rebuildIdCounters();
+      populateFields();
+    }
+  } catch (err) {
+    console.warn('No se pudo cargar el estado guardado:', err);
+  }
+}
+
+// ─── TOAST ───
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('visible');
+  setTimeout(() => el.classList.remove('visible'), 2500);
+}
+
+// ─── HTML ESCAPE UTILITY ───
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PIF DOCUMENT IMPORT — parse existing PIF docs into state
+// ┌────────────────────────────────────────────────────────────┐
+// │ TODO FUTURO: Reemplazar el parser regex por un agente IA  │
+// │ que lea el documento completo y extraiga semánticamente    │
+// │ los campos. El parser actual es frágil ante variaciones    │
+// │ de formato. Opciones: API de Claude, OpenAI, o modelo     │
+// │ local. Prioridad: ALTA para mejorar UX de importación.    │
+// └────────────────────────────────────────────────────────────┘
+// ═══════════════════════════════════════════════════════════════
+
+function handlePifDrop(event) {
+  const file = event.dataTransfer.files[0];
+  if (file) processPifFile(file);
+}
+
+function handlePifUpload(event) {
+  const file = event.target.files[0];
+  if (file) processPifFile(file);
+  event.target.value = '';
+}
+
+function processPifFile(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  showImportProgress('Procesando ' + file.name + '...');
+
+  if (ext === 'txt') {
+    const reader = new FileReader();
+    reader.onload = (e) => parsePifText(e.target.result);
+    reader.readAsText(file);
+  } else if (ext === 'docx') {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (typeof mammoth !== 'undefined') {
+        mammoth.extractRawText({ arrayBuffer: e.target.result })
+          .then(result => parsePifText(result.value))
+          .catch(err => showImportError('Error al procesar .docx: ' + err.message));
+      } else {
+        showImportError('La librería mammoth no se ha cargado. Prueba con .txt o pega el texto.');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  } else if (ext === 'doc') {
+    // Legacy .doc — try binary ASCII extraction
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const bytes = new Uint8Array(e.target.result);
+      const text = extractTextFromDoc(bytes);
+      if (text.length > 50) {
+        parsePifText(text);
+      } else {
+        showImportError('No se pudo extraer texto del .doc. Prueba guardándolo como .docx, o pega el texto manualmente.');
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    showImportError('Formato no soportado. Usa .docx, .doc o .txt');
+  }
+}
+
+// ─── Extract ASCII text from legacy .doc binary ───
+function extractTextFromDoc(bytes) {
+  const runs = [];
+  let current = [];
+  for (let i = 0; i < bytes.length; i++) {
+    const b = bytes[i];
+    if ((b >= 32 && b < 127) || b === 10 || b === 13 || b === 9 || (b >= 192 && b <= 255)) {
+      current.push(String.fromCharCode(b));
+    } else {
+      if (current.length > 4) runs.push(current.join(''));
+      current = [];
+    }
+  }
+  if (current.length > 4) runs.push(current.join(''));
+  return runs.filter(r => r.trim().length > 8).join('\n');
+}
+
+// ─── Paste modal ───
+function openPasteModal() {
+  document.getElementById('pasteModal').classList.add('visible');
+  document.getElementById('pasteArea').focus();
+}
+function closePasteModal() {
+  document.getElementById('pasteModal').classList.remove('visible');
+}
+function processPastedText() {
+  const text = document.getElementById('pasteArea').value;
+  if (!text.trim()) { showImportError('No hay texto para procesar.'); return; }
+  closePasteModal();
+  parsePifText(text);
+}
+
+// ─── MAIN PIF TEXT PARSER ───
+function parsePifText(text) {
+  const results = [];
+  const t = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+  // Helper: extract value after a label (handles multi-line)
+  function grab(pattern, maxLen) {
+    maxLen = maxLen || 500;
+    const re = new RegExp(pattern + '[:\\s]*(.+)', 'i');
+    const m = t.match(re);
+    return m ? m[1].trim().substring(0, maxLen) : '';
+  }
+
+  // Helper: extract a block of text between two labels
+  function grabBlock(startPattern, endPattern) {
+    const re = new RegExp(startPattern + '[:\\s]*\\n?([\\s\\S]*?)(?=' + endPattern + '|$)', 'i');
+    const m = t.match(re);
+    return m ? m[1].trim() : '';
+  }
+
+  // ── IDENTITY ──
+  const country = grab('Country');
+  if (country) { state.country = mapCountry(country); results.push('País: ' + state.country); }
+
+  const orgName = grab('Organi[sz]ation name') || grab('Organisation name');
+  if (orgName) { state.organisation_name = orgName; results.push('Nombre: ' + orgName); }
+
+  const foundDate = grab('Foundation date');
+  if (foundDate) {
+    const parsed = parseFlexDate(foundDate);
+    if (parsed) { state.foundation_date = parsed; results.push('Fundación: ' + parsed); }
+  }
+
+  const legalNat = grab('full legal name \\(national') || grab('full legal name\\s*\\(national');
+  if (legalNat) { state.legal_name_national = legalNat; results.push('Nombre legal (nacional): ' + legalNat); }
+
+  const orgType = grab('Type of organi[sz]ation');
+  if (orgType) { state.organisation_type = mapOrgType(orgType); results.push('Tipo: ' + orgType); }
+
+  // Acronym — look for common patterns
+  const acronym = grab('Acronym');
+  if (acronym) { state.acronym = acronym; results.push('Acrónimo: ' + acronym); }
+
+  // PIC / OID
+  const picMatch = t.match(/PIC[:\s]*(\d{9})/i);
+  if (picMatch) { state.pic_oid = picMatch[1]; results.push('PIC: ' + picMatch[1]); }
+
+  // National ID / VAT
+  const vatMatch = grab('National ID') || grab('VAT Code');
+  if (vatMatch) {
+    // Clean up: might be "registration: 3705. VAT Code: G39617584"
+    const fullId = t.match(/registration[:\s]*(\d+)[.\s]*VAT Code[:\s]*([A-Z0-9]+)/i);
+    if (fullId) {
+      state.national_id_vat = fullId[2];
+      results.push('VAT: ' + fullId[2]);
+    } else {
+      state.national_id_vat = vatMatch;
+      results.push('ID Nacional: ' + vatMatch);
+    }
+  }
+
+  // Address
+  const address = grab('address') || grab('If not, address');
+  if (address && address.length > 3 && !/same address/i.test(address)) {
+    state.address = address; results.push('Dirección: ' + address);
+  }
+
+  const postCode = grab('Post code');
+  if (postCode) { state.post_code = postCode; results.push('CP: ' + postCode); }
+
+  const city = grab('City');
+  if (city) { state.city = city; results.push('Ciudad: ' + city); }
+
+  const region = grab('Region');
+  if (region && region.length > 1 && region.length < 60) { state.region = region; results.push('Región: ' + region); }
+
+  const website = grab('Website');
+  if (website) { state.website = website; results.push('Web: ' + website); }
+
+  const email = grab('Email') || grab('Organisation email') || grab('e-?mail');
+  if (email && email.includes('@')) { state.organisation_email = email; results.push('Email: ' + email); }
+
+  // Phones
+  const phones = t.match(/(?:Telephone|Phone|Tel)[.\s]*\d?[:\s]*([\d\s+\-()]{7,20})/gi) || [];
+  if (phones.length >= 1) {
+    const p1 = phones[0].replace(/.*?[:\s]+([\d\s+\-()]+)/, '$1').trim();
+    state.phone_1 = p1; results.push('Teléfono 1: ' + p1);
+  }
+  if (phones.length >= 2) {
+    const p2 = phones[1].replace(/.*?[:\s]+([\d\s+\-()]+)/, '$1').trim();
+    state.phone_2 = p2; results.push('Teléfono 2: ' + p2);
+  }
+
+  // ── LEGAL ──
+  const publicBody = grab('public body');
+  if (/yes|sí|si/i.test(publicBody)) { state.is_public_body = true; results.push('Organismo público: Sí'); }
+
+  const nonProfit = grab('non-?profit');
+  if (/yes|sí|si/i.test(nonProfit)) { state.is_non_profit = true; results.push('Sin ánimo de lucro: Sí'); }
+
+  // Accreditation
+  const accred = grab('accreditation before');
+  if (/yes|sí|si/i.test(accred)) {
+    state.has_accreditation = true;
+    const accType = grab('Accreditation type');
+    const accRef = grab('Accreditation reference');
+    if (accType) { state.accreditation_type = accType; results.push('Acreditación: ' + accType); }
+    if (accRef) { state.accreditation_reference = accRef; results.push('Ref. acreditación: ' + accRef); }
+  }
+
+  // ── CAPACITY / BACKGROUND ──
+  const briefBlock = grabBlock('Please briefly present the partner', 'What are the activities');
+  if (!briefBlock) {
+    const altBrief = grabBlock('BACKGROUND AND EXPERIENCE', 'What are the activities');
+    if (altBrief) { state.brief_presentation = altBrief; results.push('Presentación: ' + altBrief.substring(0, 60) + '...'); }
+  } else {
+    state.brief_presentation = briefBlock;
+    results.push('Presentación: ' + briefBlock.substring(0, 60) + '...');
+  }
+
+  const activitiesBlock = grabBlock('What are the activities and experience', 'Have you participated');
+  if (activitiesBlock) {
+    state.relevant_experience = activitiesBlock;
+    results.push('Experiencia: ' + activitiesBlock.substring(0, 60) + '...');
+  }
+
+  // ── CONTACT PERSON ──
+  const contactBlock = grabBlock('CONTACT PERSON', 'ASSOCIATED|OPERATIONAL|$');
+  const legalRepBlock = grabBlock('LEGAL REPRESENTATIVE', 'CONTACT PERSON|ASSOCIATED|$');
+
+  if (legalRepBlock || contactBlock) {
+    state.contacts = [];
+  }
+
+  if (legalRepBlock) {
+    const c = parseContactBlock(legalRepBlock, true, false);
+    if (c.name) { state.contacts.push(c); results.push('Representante legal: ' + c.name); }
+  }
+
+  if (contactBlock) {
+    const c = parseContactBlock(contactBlock, false, true);
+    if (c.name) {
+      // Avoid duplicate if same person
+      const isDup = state.contacts.some(x => x.name === c.name);
+      if (isDup) {
+        state.contacts[0].is_primary_contact = true;
+      } else {
+        state.contacts.push(c);
+      }
+      results.push('Contacto principal: ' + c.name);
+    }
+  }
+
+  // ── PREVIOUS PROJECTS ──
+  const projMatches = t.match(/(\d{4}-\d-[A-Z]{2}\d{2}-KA\d+-\d+)/g) || [];
+  if (projMatches.length > 0) {
+    state.previous_projects = [];
+    const uniqueCodes = [...new Set(projMatches)];
+    uniqueCodes.forEach(code => {
+      const year = code.substring(0, 4);
+      let programme = 'Erasmus+';
+      if (/KA1/i.test(code)) programme = 'Erasmus+ KA1';
+      else if (/KA2/i.test(code)) programme = 'Erasmus+ KA2';
+      else if (/KA3/i.test(code)) programme = 'Erasmus+ KA3';
+
+      // Try to determine role
+      let role = 'partner';
+      // If code contains ES (Spain country code matching org), likely coordinator
+      const countryCode = code.match(/-([A-Z]{2})\d{2}-/);
+
+      state.previous_projects.push({
+        project_internal_id: generateId('prevproj'),
+        programme: programme,
+        year: year,
+        code: code,
+        role: role,
+        title: ''
+      });
+    });
+    results.push('Proyectos previos: ' + uniqueCodes.length + ' encontrados');
+  }
+
+  // ── KEY STAFF / OPERATIONAL CAPACITY ──
+  const staffBlock = grabBlock('OPERATIONAL CAPACITY', 'ASSOCIATED|$');
+  if (staffBlock) {
+    const staffEntries = staffBlock.split(/\d+\.\s*(?=[A-ZÁÉÍÓÚÑ])/);
+    state.key_staff = [];
+    staffEntries.forEach(entry => {
+      entry = entry.trim();
+      if (entry.length < 10) return;
+      // First part before ":" or first sentence is the name
+      const nameMatch = entry.match(/^([^:;.]+)/);
+      const name = nameMatch ? nameMatch[1].trim() : '';
+      const summary = entry.replace(name, '').replace(/^[:\s]+/, '').trim();
+      if (name.length > 2 && name.length < 80) {
+        state.key_staff.push({
+          staff_internal_id: generateId('staff'),
+          name: name,
+          role: '',
+          summary: summary.substring(0, 2000)
+        });
+        results.push('Personal: ' + name);
+      }
+    });
+  }
+
+  // ── Show results ──
+  if (results.length > 0) {
+    rebuildIdCounters();
+    populateFields();
+    showImportSuccess(results);
+  } else {
+    showImportError('No se pudieron extraer datos del documento. Intenta con otro formato o pega el texto manualmente.');
+  }
+}
+
+// ─── Parse a contact block ───
+function parseContactBlock(block, isLegalRep, isPrimaryContact) {
+  function cGrab(pattern) {
+    const re = new RegExp(pattern + '[:\\s]*(.+)', 'i');
+    const m = block.match(re);
+    return m ? m[1].trim() : '';
+  }
+  const firstName = cGrab('First Name');
+  const familyName = cGrab('Family Name');
+  const name = (firstName + ' ' + familyName).trim();
+  const title = cGrab('Title');
+
+  // Email
+  const emailMatch = block.match(/[\w.+-]+@[\w.-]+\.\w+/);
+  const email = emailMatch ? emailMatch[0] : '';
+
+  // Phone
+  const phoneMatch = block.match(/(?:Telephone|Phone)[.\s]*\d?[:\s]*([\d\s+\-()]{7,20})/i);
+  const phone = phoneMatch ? phoneMatch[1].trim() : '';
+
+  const department = cGrab('Department');
+  const position = cGrab('Position');
+
+  return {
+    contact_internal_id: generateId('contact'),
+    name, title, department, position, email, phone,
+    is_legal_representative: !!isLegalRep,
+    is_primary_contact: !!isPrimaryContact
+  };
+}
+
+// ─── Map country name to our list ───
+function mapCountry(raw) {
+  const r = raw.toLowerCase().trim();
+  const allCountries = Object.values(COUNTRY_GROUPS).flat();
+  // Exact match
+  const exact = allCountries.find(c => c.toLowerCase() === r);
+  if (exact) return exact;
+  // Partial / alias
+  const aliases = {
+    'spain': 'Spain', 'españa': 'Spain', 'espana': 'Spain',
+    'france': 'France', 'francia': 'France',
+    'italy': 'Italy', 'italia': 'Italy',
+    'germany': 'Germany', 'alemania': 'Germany',
+    'portugal': 'Portugal',
+    'turkey': 'Türkiye', 'turquía': 'Türkiye', 'turquia': 'Türkiye',
+    'greece': 'Greece', 'grecia': 'Greece',
+    'netherlands': 'Netherlands', 'países bajos': 'Netherlands',
+    'belgium': 'Belgium', 'bélgica': 'Belgium',
+    'austria': 'Austria',
+    'sweden': 'Sweden', 'suecia': 'Sweden',
+    'denmark': 'Denmark', 'dinamarca': 'Denmark',
+    'finland': 'Finland', 'finlandia': 'Finland',
+    'ireland': 'Ireland', 'irlanda': 'Ireland',
+    'poland': 'Poland', 'polonia': 'Poland',
+    'romania': 'Romania', 'rumanía': 'Romania', 'rumania': 'Romania',
+    'croatia': 'Croatia', 'croacia': 'Croatia',
+    'czech republic': 'Czechia', 'república checa': 'Czechia', 'czechia': 'Czechia',
+    'hungary': 'Hungary', 'hungría': 'Hungary',
+    'slovakia': 'Slovakia', 'eslovaquia': 'Slovakia',
+    'slovenia': 'Slovenia', 'eslovenia': 'Slovenia',
+    'lithuania': 'Lithuania', 'lituania': 'Lithuania',
+    'latvia': 'Latvia', 'letonia': 'Latvia',
+    'estonia': 'Estonia',
+    'cyprus': 'Cyprus', 'chipre': 'Cyprus',
+    'malta': 'Malta',
+    'luxembourg': 'Luxembourg', 'luxemburgo': 'Luxembourg',
+    'bulgaria': 'Bulgaria',
+    'norway': 'Norway', 'noruega': 'Norway',
+    'iceland': 'Iceland', 'islandia': 'Iceland',
+    'liechtenstein': 'Liechtenstein',
+    'north macedonia': 'North Macedonia', 'macedonia del norte': 'North Macedonia',
+    'serbia': 'Serbia',
+    'uk': 'United Kingdom', 'united kingdom': 'United Kingdom', 'reino unido': 'United Kingdom'
+  };
+  return aliases[r] || raw;
+}
+
+// ─── Map org type strings ───
+function mapOrgType(raw) {
+  const r = raw.toLowerCase();
+  if (/ngo|ong|associat|asociac/i.test(r)) return 'ngo';
+  if (/higher|universit/i.test(r)) return 'higher_education';
+  if (/school|escuela/i.test(r)) return 'school';
+  if (/vet|fp|vocational/i.test(r)) return 'vet';
+  if (/adult/i.test(r)) return 'adult_education';
+  if (/foundation|fundac/i.test(r)) return 'foundation';
+  if (/sme|pyme|small|empresa/i.test(r)) return 'sme';
+  if (/public|públ/i.test(r)) return 'public_body';
+  if (/research|investig/i.test(r)) return 'research';
+  return 'other';
+}
+
+// ─── Parse flexible dates ───
+function parseFlexDate(raw) {
+  // Try ISO
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+  // "24 may 2005" style
+  const months = { jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',
+    jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12',
+    ene:'01',feb:'02',mar:'03',abr:'04',may:'05',jun:'06',
+    jul:'07',ago:'08',sep:'09',oct:'10',nov:'11',dic:'12' };
+  const m = raw.match(/(\d{1,2})\s+([a-záéíóú]+)\s+(\d{4})/i);
+  if (m) {
+    const month = months[m[2].toLowerCase().substring(0, 3)];
+    if (month) return m[3] + '-' + month + '-' + m[1].padStart(2, '0');
+  }
+  // "DD/MM/YYYY"
+  const m2 = raw.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+  if (m2) return m2[3] + '-' + m2[2].padStart(2, '0') + '-' + m2[1].padStart(2, '0');
+  return '';
+}
+
+// ─── UI helpers for import results ───
+function showImportProgress(msg) {
+  const el = document.getElementById('importResult');
+  el.className = 'import-result visible';
+  document.getElementById('importResultTitle').textContent = '⏳ ' + msg;
+  document.getElementById('importResultList').textContent = '';
+}
+
+function showImportSuccess(results) {
+  const el = document.getElementById('importResult');
+  el.className = 'import-result visible';
+  document.getElementById('importResultTitle').textContent = '✅ Datos extraídos correctamente (' + results.length + ' campos)';
+  document.getElementById('importResultList').innerHTML = results.map(r => '• ' + r).join('<br>');
+  showToast(results.length + ' campos importados del PIF');
+}
+
+function showImportError(msg) {
+  const el = document.getElementById('importResult');
+  el.className = 'import-result visible error';
+  document.getElementById('importResultTitle').textContent = '⚠ ' + msg;
+  document.getElementById('importResultList').textContent = '';
+}
+
+</script>
+</body>
+</html>
