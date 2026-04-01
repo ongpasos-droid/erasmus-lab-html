@@ -1,0 +1,42 @@
+CSS braces are balanced. The file is syntactically valid.
+
+Here's a summary of all responsive improvements made:
+
+**Step Nav (horizontal scroll + indicators)**
+- Hidden scrollbar with `-webkit-overflow-scrolling: touch` for smooth mobile scrolling
+- Fade gradient indicators (left/right) that show/hide based on scroll position
+- Dot indicators below the nav showing which step is active
+- Auto-scrolls to center the active tab when navigating
+
+**Form Grids**
+- Collapse to 1 column at `≤768px` (tablet) and `≤600px` (mobile)
+- 3-column grids also collapse properly
+
+**Array Items (contacts, staff, etc.)**
+- Reduced padding for mobile
+- Header restructured: title on top, badge + delete button in a row below
+- Touch-friendly delete buttons (44px min)
+
+**Buttons & Touch Targets**
+- All `.btn` get `min-height: 44px` on mobile
+- Step action buttons go full-width and stack vertically
+- Checkboxes enlarged to 22px with larger tap areas
+- Form inputs use `font-size: 16px` to prevent iOS zoom
+
+**App Bar**
+- Compact height (50px), button text labels hidden (icons only)
+- Buttons maintain 44px min touch target
+
+**Country Dropdown**
+- Items get `min-height: 44px` for touch
+- Max height capped at `50vh` to avoid overflow
+- Sticky group headers preserved
+
+**Paste Modal**
+- Slides up from bottom (sheet-style) on mobile
+- Full width, max 90vh height
+- Buttons stack vertically
+
+**375px Breakpoint**
+- Base font size reduced to 14px
+- Extra-compact padding throughout

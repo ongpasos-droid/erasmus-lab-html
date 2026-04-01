@@ -610,14 +610,274 @@ body {
   margin-top: 14px;
 }
 
-@media (max-width: 700px) {
+/* Step-nav dots — hidden on desktop */
+.step-nav-dots { display: none; }
+
+/* ── Tablet (≤ 768px) ── */
+@media (max-width: 768px) {
   .form-grid { grid-template-columns: 1fr; }
   .form-grid--3 { grid-template-columns: 1fr; }
-  .app-bar { padding: 0 12px; }
+  .info-cards { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── Mobile (≤ 600px) ── */
+@media (max-width: 600px) {
+
+  /* APP BAR — compact */
+  .app-bar { padding: 0 10px; height: 50px; }
+  .app-bar__brand { font-size: .95rem; }
   .app-bar__brand span { display: none; }
-  .main { padding: 16px 12px 60px; }
-  .card { padding: 18px; }
-  .step-actions { flex-direction: column; gap: 10px; }
+  .app-bar__actions { gap: 4px; }
+  .app-bar__btn {
+    padding: 8px 10px;
+    font-size: .75rem;
+    min-height: 44px;
+    min-width: 44px;
+    justify-content: center;
+  }
+  .app-bar__btn .btn-label { display: none; }
+
+  /* STEP NAV — horizontal scroll with fade indicators */
+  .step-nav {
+    top: 50px; /* match compact header */
+    position: relative;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .step-nav::-webkit-scrollbar { display: none; }
+  .step-nav::before,
+  .step-nav::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 28px;
+    z-index: 2;
+    pointer-events: none;
+    transition: opacity .2s;
+  }
+  .step-nav::before {
+    left: 0;
+    background: linear-gradient(to right, var(--surface) 20%, transparent);
+    opacity: 0;
+  }
+  .step-nav::after {
+    right: 0;
+    background: linear-gradient(to left, var(--surface) 20%, transparent);
+  }
+  .step-nav.scrolled-start::before { opacity: 1; }
+  .step-nav.scrolled-end::after   { opacity: 0; }
+
+  /* Scroll indicator dots */
+  .step-nav-dots {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    padding: 4px 0 6px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border-light);
+  }
+  .step-nav-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all .2s;
+  }
+  .step-nav-dot.active {
+    background: var(--green-600);
+    transform: scale(1.3);
+  }
+
+  .step-nav__inner {
+    min-width: max-content;
+    padding: 0 8px;
+  }
+  .step-tab {
+    min-width: 80px;
+    padding: 10px 12px;
+    font-size: .7rem;
+  }
+  .step-tab__num { font-size: .6rem; }
+
+  /* MAIN CONTENT */
+  .main { padding: 14px 10px 70px; }
+
+  /* CARDS */
+  .card { padding: 16px 14px; margin-bottom: 14px; border-radius: var(--radius); }
+
+  /* HERO — compact */
+  .hero { padding: 24px 8px; }
+  .hero__icon { font-size: 2.2rem; margin-bottom: 8px; }
+  .hero__title { font-size: 1.3rem; }
+  .hero__desc { font-size: .88rem; margin-bottom: 20px; }
+  .badge-row { gap: 6px; margin-bottom: 20px; }
+  .badge { font-size: .65rem; padding: 4px 10px; }
+  .info-cards { grid-template-columns: 1fr; gap: 10px; }
+  .info-card { padding: 14px; }
+
+  /* FORM GRIDS — always single column */
+  .form-grid,
+  .form-grid--3 { grid-template-columns: 1fr; gap: 12px; }
+
+  /* FORM FIELDS — larger touch targets */
+  .field input,
+  .field select,
+  .field textarea {
+    font-size: 16px; /* prevents iOS zoom */
+    padding: 12px;
+    min-height: 44px;
+  }
+  .field label { font-size: .74rem; margin-bottom: 4px; }
+  .field select { padding-right: 32px; }
+
+  /* CHECKBOXES — larger touch area */
+  .checkbox-row {
+    padding: 10px 0;
+    min-height: 44px;
+    align-items: center;
+  }
+  .checkbox-row label { font-size: .85rem; }
+  .field input[type="checkbox"] {
+    width: 22px; height: 22px;
+    flex-shrink: 0;
+  }
+
+  /* BUTTONS — min 44px touch target */
+  .btn {
+    min-height: 44px;
+    padding: 12px 18px;
+    font-size: .85rem;
+    justify-content: center;
+    width: 100%;
+  }
+  .btn--sm {
+    min-height: 44px;
+    padding: 10px 14px;
+    font-size: .8rem;
+  }
+
+  /* STEP ACTIONS — stacked */
+  .step-actions {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 24px;
+    padding-top: 16px;
+  }
+  .step-actions .btn { width: 100%; }
+
+  /* ARRAY ITEMS — compact on mobile */
+  .array-item {
+    padding: 14px 12px;
+    margin-bottom: 10px;
+    border-radius: var(--radius-sm);
+  }
+  .array-item__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .array-item__header > div {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .array-item__title { font-size: .88rem; }
+  .array-item__badge { font-size: .6rem; }
+
+  /* ARRAY ADD button */
+  .array-add {
+    min-height: 48px;
+    font-size: .85rem;
+    padding: 12px;
+  }
+
+  /* COUNTRY DROPDOWN — full width, better touch */
+  .country-dropdown {
+    max-height: 50vh;
+    -webkit-overflow-scrolling: touch;
+  }
+  .country-dropdown__item {
+    padding: 12px 14px;
+    font-size: .9rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  .country-dropdown__group {
+    padding: 8px 12px 4px;
+    font-size: .65rem;
+    position: sticky;
+    top: 0;
+  }
+
+  /* PASTE MODAL — full screen on mobile */
+  .paste-modal-overlay { padding: 10px; align-items: flex-end; }
+  .paste-modal {
+    width: 100%;
+    max-height: 90vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .paste-modal__title { font-size: 1rem; }
+  .paste-modal__desc { font-size: .82rem; margin-bottom: 12px; }
+  .paste-modal textarea {
+    min-height: 180px;
+    flex: 1;
+    font-size: 14px;
+    padding: 12px;
+  }
+  .paste-modal__actions {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .paste-modal__actions .btn { width: 100%; }
+
+  /* IMPORT ZONE */
+  .import-zone { padding: 20px 14px; }
+  .import-zone__icon { font-size: 1.8rem; }
+  .import-zone__title { font-size: .92rem; }
+  .import-zone__desc { font-size: .8rem; }
+
+  /* JSON PREVIEW */
+  .json-preview {
+    font-size: .68rem;
+    padding: 14px;
+    max-height: 300px;
+  }
+
+  /* EXPORT BUTTONS ROW (step 7) */
+  .card > div[style*="display:flex"] {
+    flex-direction: column;
+  }
+
+  /* PROGRESS BAR */
+  .progress-bar { margin-bottom: 14px; }
+
+  /* TOAST — bottom centered */
+  .toast {
+    left: 12px; right: 12px;
+    bottom: 16px;
+    text-align: center;
+    font-size: .82rem;
+    padding: 12px 16px;
+  }
+}
+
+/* ── Very small screens (≤ 375px) ── */
+@media (max-width: 375px) {
+  html { font-size: 14px; }
+  .app-bar__btn { padding: 8px; font-size: .7rem; }
+  .card { padding: 14px 12px; }
+  .hero { padding: 18px 4px; }
+  .hero__title { font-size: 1.15rem; }
+  .array-item { padding: 12px 10px; }
+  .paste-modal { padding: 16px 12px; }
+  .step-tab { min-width: 70px; padding: 8px 10px; font-size: .65rem; }
 }
 </style>
 </head>
@@ -630,17 +890,18 @@ body {
   </div>
   <div class="app-bar__spacer"></div>
   <div class="app-bar__actions">
-    <button class="app-bar__btn" onclick="saveToLocal()" title="Guardar en navegador">💾 Guardar</button>
-    <button class="app-bar__btn" onclick="triggerImport()" title="Cargar JSON">📂 Cargar</button>
-    <button class="app-bar__btn app-bar__btn--accent" onclick="exportJSON()" title="Exportar JSON">⬇ Exportar</button>
+    <button class="app-bar__btn" onclick="saveToLocal()" title="Guardar en navegador">💾 <span class="btn-label">Guardar</span></button>
+    <button class="app-bar__btn" onclick="triggerImport()" title="Cargar JSON">📂 <span class="btn-label">Cargar</span></button>
+    <button class="app-bar__btn app-bar__btn--accent" onclick="exportJSON()" title="Exportar JSON">⬇ <span class="btn-label">Exportar</span></button>
     <input type="file" id="importInput" accept=".json" onchange="importJSON(event)">
   </div>
 </header>
 
 <!-- ══════════════ STEP NAV ══════════════ -->
-<nav class="step-nav">
+<nav class="step-nav" id="stepNavScroll">
   <div class="step-nav__inner" id="stepNav"></div>
 </nav>
+<div class="step-nav-dots" id="stepNavDots"></div>
 
 <!-- ══════════════ MAIN ══════════════ -->
 <div class="main">
@@ -1187,10 +1448,52 @@ function createEmptyState() {
 document.addEventListener('DOMContentLoaded', () => {
   populateCountrySelect();
   renderStepNav();
+  renderStepNavDots();
+  initStepNavScroll();
   loadFromLocal();
   goStep(0);
   bindFieldListeners();
 });
+
+// ─── STEP NAV DOTS & SCROLL INDICATORS ───
+function renderStepNavDots() {
+  const dots = document.getElementById('stepNavDots');
+  if (!dots) return;
+  dots.innerHTML = STEPS.map((_, i) =>
+    `<span class="step-nav-dot${i === currentStep ? ' active' : ''}" data-dot="${i}"></span>`
+  ).join('');
+}
+
+function updateStepNavDots() {
+  document.querySelectorAll('.step-nav-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === currentStep);
+  });
+}
+
+function initStepNavScroll() {
+  const nav = document.getElementById('stepNavScroll');
+  if (!nav) return;
+  const update = () => {
+    const sl = nav.scrollLeft;
+    const maxScroll = nav.scrollWidth - nav.clientWidth;
+    nav.classList.toggle('scrolled-start', sl > 8);
+    nav.classList.toggle('scrolled-end', sl >= maxScroll - 8);
+  };
+  nav.addEventListener('scroll', update, { passive: true });
+  // Initial check after render
+  requestAnimationFrame(update);
+}
+
+function scrollStepNavToActive() {
+  const nav = document.getElementById('stepNavScroll');
+  const activeTab = nav?.querySelector('.step-tab.active');
+  if (nav && activeTab) {
+    const navRect = nav.getBoundingClientRect();
+    const tabRect = activeTab.getBoundingClientRect();
+    const offset = tabRect.left - navRect.left - (navRect.width / 2) + (tabRect.width / 2);
+    nav.scrollBy({ left: offset, behavior: 'smooth' });
+  }
+}
 
 // ─── COUNTRY AUTOCOMPLETE ───
 // Build flat list preserving group order for the dropdown
@@ -1289,6 +1592,10 @@ function goStep(n) {
   if (n === 4) renderStaff();
   if (n === 5) renderProjects();
   if (n === 6) { renderEntities(); refreshPreview(); }
+
+  // Mobile: scroll step nav to active tab & update dots
+  updateStepNavDots();
+  scrollStepNavToActive();
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
