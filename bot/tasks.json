@@ -28,7 +28,7 @@
     {
       "id": "task-002",
       "priority": 2,
-      "status": "pending",
+      "status": "completed",
       "branch": "bot/responsive-pif",
       "title": "Mejorar responsividad mobile del PIF Wizard",
       "prompt": "Revisa modules/pif-wizard.html y mejora la experiencia en móvil:\n1. Testea mentalmente cada paso del wizard en viewport de 375px.\n2. Mejora el step-nav para que sea scrollable horizontalmente con indicadores.\n3. Asegúrate de que los form-grid colapsen correctamente a 1 columna.\n4. Los array-item (contactos, staff, etc.) deben verse bien en móvil.\n5. Los botones de acción deben ser suficientemente grandes para touch (min 44px).\n6. El dropdown de países debe funcionar bien en móvil.\n7. El modal de pegar texto debe adaptarse a pantalla pequeña.\nMantén la paleta de colores y tipografías actuales. Solo CSS responsive.",
