@@ -427,7 +427,25 @@ body {
   overflow-x: auto;
   max-height: 500px;
   overflow-y: auto;
-  white-space: pre;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.json-preview .json-key { color: #7ec8e3; }
+.json-preview .json-string { color: #a8d89f; }
+.json-preview .json-number { color: #f0c674; }
+.json-preview .json-bool { color: #cc99cd; }
+.json-preview .json-null { color: #999; font-style: italic; }
+.json-preview .json-bracket { color: #ccc; }
+
+.export-warning {
+  background: #5c4a1e;
+  border: 1px solid #a08030;
+  color: #f5d680;
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  font-size: .85rem;
+  line-height: 1.4;
 }
 
 /* ══════════════════════════════════════
@@ -1659,7 +1677,25 @@ function renderEntities() {
 function refreshPreview() {
   collectFields();
   const output = buildExportJSON();
-  document.getElementById('jsonPreview').textContent = JSON.stringify(output, null, 2);
+  const container = document.getElementById('jsonPreview');
+  container.innerHTML = syntaxHighlightJSON(JSON.stringify(output, null, 2));
+  showExportWarnings(getRequiredFieldWarnings());
+}
+
+function syntaxHighlightJSON(json) {
+  return json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/("(\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?|\bnull\b)/g,
+      function (match) {
+        let cls = 'json-number';
+        if (/^"/.test(match)) {
+          cls = /:$/.test(match) ? 'json-key' : 'json-string';
+        } else if (/true|false/.test(match)) {
+          cls = 'json-bool';
+        } else if (/null/.test(match)) {
+          cls = 'json-null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+      });
 }
 
 // ═══════════════════════════════════════
@@ -1668,54 +1704,61 @@ function refreshPreview() {
 
 function buildExportJSON() {
   collectFields();
+
+  const partnerFields = [
+    'partner_internal_id', 'record_status', 'created_at', 'updated_at',
+    'country', 'organisation_name', 'acronym', 'foundation_date',
+    'pic_oid', 'organisation_type', 'legal_name_national', 'national_id_vat',
+    'website', 'organisation_email', 'phone_1', 'phone_2',
+    'address', 'post_code', 'city', 'region',
+    'is_public_body', 'is_non_profit', 'has_accreditation',
+    'accreditation_type', 'accreditation_reference',
+    'brief_presentation', 'relevant_experience', 'staff_size',
+    'eu_projects_per_year', 'has_training_facilities', 'has_digital_infrastructure',
+    'expertise_areas', 'erasmus_roles'
+  ];
+
+  const partnerData = {};
+  let filledCount = 0;
+  const totalCount = partnerFields.length;
+
+  partnerFields.forEach(f => {
+    partnerData[f] = state[f];
+    const v = state[f];
+    if (v !== undefined && v !== null && v !== '' && !(Array.isArray(v) && v.length === 0)) {
+      filledCount++;
+    }
+  });
+
+  const arrayFields = ['contacts', 'key_staff', 'previous_projects', 'associated_partners'];
+  const totalArrays = arrayFields.length;
+  let filledArrays = 0;
+  arrayFields.forEach(f => {
+    if (state[f] && state[f].length > 0) filledArrays++;
+  });
+
   return {
     meta: {
+      schema_version: '1.0',
       version: '1.0',
       tool: 'pif-wizard',
       generated_at: new Date().toISOString(),
       source_module: 'pif'
     },
-    partner: {
-      partner_internal_id: state.partner_internal_id,
-      record_status: state.record_status,
-      created_at: state.created_at,
-      updated_at: state.updated_at,
-
-      // Identity
-      country: state.country,
-      organisation_name: state.organisation_name,
-      acronym: state.acronym,
-      foundation_date: state.foundation_date,
-      pic_oid: state.pic_oid,
-      organisation_type: state.organisation_type,
-      legal_name_national: state.legal_name_national,
-      national_id_vat: state.national_id_vat,
-      website: state.website,
-      organisation_email: state.organisation_email,
-      phone_1: state.phone_1,
-      phone_2: state.phone_2,
-      address: state.address,
-      post_code: state.post_code,
-      city: state.city,
-      region: state.region,
-
-      // Legal
-      is_public_body: state.is_public_body,
-      is_non_profit: state.is_non_profit,
-      has_accreditation: state.has_accreditation,
-      accreditation_type: state.accreditation_type,
-      accreditation_reference: state.accreditation_reference,
-
-      // Capacity
-      brief_presentation: state.brief_presentation,
-      relevant_experience: state.relevant_experience,
-      staff_size: state.staff_size,
-      eu_projects_per_year: state.eu_projects_per_year,
-      has_training_facilities: state.has_training_facilities,
-      has_digital_infrastructure: state.has_digital_infrastructure,
-      expertise_areas: state.expertise_areas,
-      erasmus_roles: state.erasmus_roles
+    ecosystem: {
+      tool: 'pif-wizard',
+      version: '1.0',
+      compatible_with: ['intake', 'calculator', 'planner']
     },
+    completeness: {
+      partner_fields_filled: filledCount,
+      partner_fields_total: totalCount,
+      partner_percent: Math.round((filledCount / totalCount) * 100),
+      arrays_with_data: filledArrays,
+      arrays_total: totalArrays,
+      summary: `${filledCount}/${totalCount} campos partner (${Math.round((filledCount / totalCount) * 100)}%), ${filledArrays}/${totalArrays} secciones con datos`
+    },
+    partner: partnerData,
     contacts: state.contacts,
     key_staff: state.key_staff,
     previous_projects: state.previous_projects,
@@ -1723,14 +1766,50 @@ function buildExportJSON() {
   };
 }
 
+function getRequiredFieldWarnings() {
+  const required = [
+    ['organisation_name', 'Nombre de la organización'],
+    ['country', 'País'],
+    ['organisation_email', 'Email de la organización'],
+    ['city', 'Ciudad'],
+    ['brief_presentation', 'Presentación breve']
+  ];
+  const missing = [];
+  required.forEach(([field, label]) => {
+    const v = state[field];
+    if (!v || (typeof v === 'string' && !v.trim())) missing.push(label);
+  });
+  if (!state.contacts || state.contacts.length === 0) missing.push('Al menos 1 contacto');
+  return missing;
+}
+
+function showExportWarnings(missing) {
+  let container = document.getElementById('exportWarnings');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'exportWarnings';
+    const preview = document.getElementById('jsonPreview');
+    preview.parentNode.insertBefore(container, preview);
+  }
+  if (missing.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+  container.innerHTML = `<div class="export-warning">⚠️ Campos obligatorios sin rellenar: <strong>${missing.join(', ')}</strong>. Se exportará igualmente, pero el archivo puede estar incompleto.</div>`;
+}
+
 function exportJSON() {
   const data = buildExportJSON();
+  const missing = getRequiredFieldWarnings();
+  showExportWarnings(missing);
+
   const name = (state.acronym || state.organisation_name || 'partner').replace(/\s+/g, '_');
+  const date = new Date().toISOString().slice(0, 10);
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${name}_PIF.json`;
+  a.download = `${name}_PIF_${date}.json`;
   a.click();
   URL.revokeObjectURL(url);
   showToast('JSON exportado: ' + a.download);

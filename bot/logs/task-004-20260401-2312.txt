@@ -1,0 +1,13 @@
+Everything looks good. Here's a summary of all changes made to `modules/pif-wizard.html`:
+
+1. **`meta.schema_version: '1.0'`** — Added to the meta block (line 1742).
+
+2. **Bloque `ecosystem`** — Added after meta with `tool`, `version`, and `compatible_with` (lines 1748-1752).
+
+3. **Bloque `completeness`** — Counts filled vs total partner fields and array sections, with percentage and a human-readable summary string (lines 1753-1760).
+
+4. **Validación pre-export** — `getRequiredFieldWarnings()` checks 5 required fields + at least 1 contact. `showExportWarnings()` renders a styled warning banner above the preview if fields are missing, but the export proceeds anyway. Warnings also show on "Actualizar preview" (lines 1769-1800).
+
+5. **Nombre de archivo mejorado** — Now uses format `ACRONYM_PIF_YYYY-MM-DD.json` (line 1810).
+
+6. **Syntax highlighting** — `syntaxHighlightJSON()` colorizes the JSON preview with CSS classes: keys (blue), strings (green), numbers (yellow), booleans (purple), nulls (gray). The `.json-preview` now uses `innerHTML` instead of `textContent` (lines 1685-1699, CSS lines 432-438).
