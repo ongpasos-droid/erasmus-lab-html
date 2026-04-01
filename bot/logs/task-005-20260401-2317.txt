@@ -1,0 +1,11 @@
+Archivo creado. Resumen de lo implementado:
+
+**Paso 1 — Programa**: Selector con "KA3 Policy Support — Erasmus+ Youth 2026". Al seleccionar, muestra chips con los 6 parámetros autocompletados (deadline 15/03/2026, inicio 01/09/2026-01/03/2027, duración 12-24 meses, grant max 500.000€, cofin 80%, indirectos 7%).
+
+**Paso 2 — Proyecto**: Nombre, acrónimo (uppercase), duración en meses. Consorcio dinámico: el primer socio siempre es Applicant (no eliminable), los demás se añaden/eliminan libremente con nombre, ciudad, país y rol (Partner/Associated).
+
+**Paso 3 — Contexto**: 3 textareas con word counter en tiempo real (coloreado: naranja si corto, verde si en rango, rojo si largo) — Problema 200-500, Destinatarios 150-400, Enfoque 200-500.
+
+**Paso 4 — Exportar**: Resumen visual con chips + lista de socios, vista previa JSON, botones para descargar y copiar. JSON con estructura `{meta, fields, state, intake}` compatible con el calculator.
+
+**Extras**: Guardar/Cargar intake desde la app bar, toast notifications, misma paleta que pif-wizard (Syne+DM Sans, verde oscuro, fondo cálido), responsive, HTML autocontenido.
