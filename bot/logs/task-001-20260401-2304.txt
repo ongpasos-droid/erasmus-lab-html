@@ -1,0 +1,11 @@
+Commit `ba18f7f` done. Here's a summary of all changes:
+
+**Bugs corregidos:**
+1. **XSS con comillas simples** — `Côte d'Ivoire` rompía el handler `selectCountry('...')`. Añadida `escAttr()` que escapa `'` además de `"`, `<`, `>`, `&`.
+2. **Dropdown de países en móvil** — Aumentado timeout de blur a 350ms, añadido `ontouchstart` en items, y `inputmode="search"` para mejor UX en teclados virtuales.
+3. **Validación visual de campos obligatorios** — Borde rojo + mensaje "Este campo es obligatorio" para `country`, `organisation_name`, `acronym`, `city` y `brief_presentation`. Se bloquea la navegación al siguiente paso si faltan.
+4. **Import JSON robusto** — Validación con `Array.isArray()` para que datos corruptos no sobreescriban arrays con non-arrays.
+5. **localStorage robusto** — Misma protección de arrays al cargar desde el navegador.
+6. **`collectFields()` protegido** — Ya no sobreescribe propiedades de array del state con valores DOM.
+7. **`rebuildIdCounters()` mejorado** — Extrae el sufijo máximo de IDs existentes en vez de usar `.length`, evitando colisiones de IDs al importar.
+8. **Re-render completo en import** — Todos los arrays dinámicos se re-renderizan al importar JSON, no solo el del paso activo.
